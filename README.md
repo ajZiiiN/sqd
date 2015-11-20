@@ -1,0 +1,2 @@
+# sqd
+Squirrel management daemon
