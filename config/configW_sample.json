@@ -1,0 +1,10 @@
+{
+  "@name": "WORKER",
+  "worker": {
+    "clients": ["<C1-ip>", "<C2-ip>"],
+    "leader": "<leader-ip>",
+    "cluster": "<cluster-id>",
+    "game": "<game-id>",
+    "host": "<self-ip>"
+  }
+}
