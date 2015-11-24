@@ -46,6 +46,10 @@ sqd -[C|L|W] init
 	creates a sqd as client worker or Leader
 	creates a config file, from a sample file for each of client worker and leader
 	does sanity check like, no two leaders in same cluster
+	
+[L]sqd --addCl <client-ip>
+[L]sqd [stop|start|restart|config]
+[L]sqd 
 
 -------
 HANDSHAKE:
