@@ -19,3 +19,9 @@ Client to Leader:
 Client to Woker:
 
 'sqdC/pollWorker'::'sqdW'::'2015-12-02 00:02:30'::'getInfoOnClientData
+
+----------------
+Handle timeouts
+1. Using reviev timeout socket.recv(timeout=1024)
+2. Using hearbeats
+3. using socket polls for events
