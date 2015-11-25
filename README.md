@@ -34,6 +34,9 @@ Starts communicating with the Client
 #Leader:
 Maked sure each of worker are running same squirrel version.
 
+#config
+All config files are created from base file in src/config directory and resides in /etc/sqd
+
 
 ###############################
 

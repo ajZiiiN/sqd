@@ -1,5 +1,10 @@
 
 
+
+
+
+
+
 class sqdC:
     '''
     Client class for squirrel daemon.
