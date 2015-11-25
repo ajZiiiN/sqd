@@ -1,5 +1,5 @@
 {
-  "@name": "LEADER",
+  "@name": "leader",
   "leader": {
     "clients": ["<C1-ip>", "<C2-ip>"],
     "workers": ["<W1-ip>", "<W2-ip>"],
@@ -8,7 +8,7 @@
       "<C2-ip>": "<W2-ip>"
     },
     "cluster": "<cluster-id>",
-    "game": "<game-id>",
-    "host": "<self-ip>"
+    "game": 1,
+    "host": "172.16.0.134"
   }
 }

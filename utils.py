@@ -37,7 +37,7 @@ def writeJSON(filePath, conf):
 
     with open(filePath,"w") as f:
         f.truncate()
-        json.dump(conf,f, sort_keys=True)
+        json.dump(conf,f, indent=2, sort_keys=True)
         f.flush()
 
 def readJSON(filePath):

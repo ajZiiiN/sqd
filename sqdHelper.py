@@ -2,6 +2,7 @@
 
 import utils
 import os
+import genMsgId as generator
 
 
 
@@ -115,18 +116,18 @@ class sqdL:
             if not os.path.exists(os.path.join(self.configDir, self.configFile )) \
                 and not os.path.exists(os.path.join(self.configDir, self.baseConfigFile )) :
                 self.createFromSample()
+                print "Config created from sample..."
             else:
                 print "Configs are messed up, please check and clean. "
                 return
 
         if os.path.exists (os.path.join (self.configDir, self.configFile )):
             self.leaderConfig = utils.readJSON(os.path.join (self.configDir, self.configFile ))
+            print "Leader config updated..."
 
         if os.path.exists(os.path.join(self.configDir, self.baseConfigFile )):
-            self.config = utils.readJSON(self.configDir, self.baseConfigFile)
-
-
-
+            self.config = utils.readJSON(os.path.join(self.configDir, self.baseConfigFile))
+            print "Base config updated..."
 
         pass
 
@@ -141,14 +142,37 @@ class sqdL:
         conf = utils.readJSON("config/config_sample.json")
         utils.writeJSON(os.path.join(self.configDir, self.baseConfigFile), conf)
 
+
         pass
 
     def initCluster(self):
         # given the list of node to start with, construct a cluster
+        # cleans junk from config
+
+        # cleans leader/clients , leader/relation, leader/workers, cluster
+        confType = self.leaderConfig["@name"]
+        self.leaderConfig[confType]["clients"] = []
+        self.leaderConfig[confType]["relation"] = dict()
+        self.leaderConfig[confType]["workers"] = []
+        self.leaderConfig[confType]["cluster"] = ""
+
+        # resets leader/workers with host
+        host = self.leaderConfig[confType]["host"]
+        self.leaderConfig[confType]["workers"].append(host)
+
+        # resets cluster with new cluster ID
+        clusterId = generator.genNewId()
+        self.leaderConfig[confType]["cluster"] = clusterId
+
+        utils.writeJSON(os.path.join(self.configDir, self.configFile), self.leaderConfig)
+
+        print "Leader config had be changed..."
         pass
 
-    def addClient(self):
+    def addClient(self, clientIP):
         # Setting up connection between a client and a Worker
+
+
         pass
 
     def addWorker(self):
