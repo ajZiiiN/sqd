@@ -35,8 +35,17 @@ def checkCreateFile(path, fileName):
 
 def writeJSON(filePath, conf):
 
-    json.dumps(conf, sort_keys=True)
+    with open(filePath,"w") as f:
+        f.truncate()
+        json.dump(conf,f, sort_keys=True)
+        f.flush()
 
+def readJSON(filePath):
+
+    with open(filePath , "r") as f:
+        ret = json.loads(f.read())
+
+    return ret
 
 def checkSampleConfig(configType):
     if configType == "C":

@@ -1,5 +1,8 @@
 {
   "@type": "C",
   "state": "running",
-  "dataPath":"/home/ajha/hold"
+  "dataPath":"/home/ajha/hold",
+  "leaderconf":"configL.json",
+  "confdir" :"/etc/sqd",
+  "storage" : "directory to store data"
 }

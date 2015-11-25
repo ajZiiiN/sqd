@@ -1,6 +1,7 @@
 
 
-
+import utils
+import os
 
 
 
@@ -103,6 +104,43 @@ class sqdL:
     '''
 
     def __init__(self):
+        self.configFile = "configL.json"
+        self.configDir = "/etc/sqd"
+        self.baseConfigFile = "config.json"
+
+        self.config = dict()
+        self.leaderConfig = dict()
+
+        if utils.checkCreateDir(self.configDir):
+            if not os.path.exists(os.path.join(self.configDir, self.configFile )) \
+                and not os.path.exists(os.path.join(self.configDir, self.baseConfigFile )) :
+                self.createFromSample()
+            else:
+                print "Configs are messed up, please check and clean. "
+                return
+
+        if os.path.exists (os.path.join (self.configDir, self.configFile )):
+            self.leaderConfig = utils.readJSON(os.path.join (self.configDir, self.configFile ))
+
+        if os.path.exists(os.path.join(self.configDir, self.baseConfigFile )):
+            self.config = utils.readJSON(self.configDir, self.baseConfigFile)
+
+
+
+
+        pass
+
+    def createFromSample(self):
+
+        # [TODO] DO clean cluster start with only self as part of fresh cluster
+        # for now on the fresh start we initialize using the sample config, which is created manually
+
+        confL = utils.readJSON("config/configL_sample.json")
+        utils.writeJSON(os.path.join(self.configDir, self.configFile), confL)
+
+        conf = utils.readJSON("config/config_sample.json")
+        utils.writeJSON(os.path.join(self.configDir, self.baseConfigFile), conf)
+
         pass
 
     def initCluster(self):
