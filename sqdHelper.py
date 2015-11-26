@@ -242,13 +242,6 @@ class sqdL:
 
 
 
-class sender:
-
-    def __init__(self, daemon):
-        # daemon is the class object, ie. sqdL, sqdW or sqdC
-        self.daemon = daemon
-
-    def initSender(self):
 
 
 

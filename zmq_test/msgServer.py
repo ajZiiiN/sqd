@@ -5,51 +5,56 @@ import time
 import thread
 import threading
 
-port = "5556"
-context = zmq.Context()
-socket = context.socket(zmq.PAIR)
-socket.bind("tcp://172.16.0.134:%s" % port)
+class msgServer:
 
-socket.send("Heartbeat")
+    def __init__(self):
+        self.port = "5556"
+        self.threads = []
 
-def recieve():
-
-    while True:
-        try:
-            msg = socket.recv(zmq.NOBLOCK)
-            print "Got: " + msg
-        except zmq.ZMQError as e:
-            print e
-            print "Din recieve, Recovering...."
-            time.sleep(5)
-        except:
-            print "Something went Wrong.."
-            return
-
-def send():
-
-    while True:
-        try:
-            msgS = raw_input("MSG to send: ")
-            socket.send(msgS, zmq.NOBLOCK)
-        except zmq.ZMQError as e:
-            print e
-            print "Could not send, Recovering...."
-            time.sleep(3)
-        except:
-            print "Something went wrong.."
-            return
+        context = zmq.Context()
+        self.socket = context.socket(zmq.PAIR)
+        self.socket.bind("tcp://172.16.0.134:%s" % self.port)
 
 
+    def recieve(self):
 
-threads = []
-t1 = threading.Thread(target=send)
-t1.start()
-threads.append(t1)
+        while True:
+            try:
+                msg = self.socket.recv(zmq.NOBLOCK)
+                print "Got: " + msg
+            except zmq.ZMQError as e:
+                print e
+                print "Din recieve, Recovering...."
+                time.sleep(5)
+            except:
+                print "Something went Wrong.."
+                return
 
-t2 = threading.Thread(target=recieve)
-t2.start()
-threads.append(t2)
+    def send(self):
+        while True:
+            try:
+                msgS = raw_input("MSG to send: ")
+                self.socket.send(msgS, zmq.NOBLOCK)
+            except zmq.ZMQError as e:
+                print e
+                print "Could not send, Recovering...."
+                time.sleep(3)
+            except:
+                print "Something went wrong.."
+                return
 
-for t in threads:
-    t.join()
+
+    def run(self):
+
+        self.socket.send("Heartbeat")
+
+        t1 = threading.Thread(target=self.send)
+        t1.start()
+        self.threads.append(t1)
+
+        t2 = threading.Thread(target=self.recieve)
+        t2.start()
+        self.threads.append(t2)
+
+        for t in self.threads:
+            t.join()
