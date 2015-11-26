@@ -1,27 +1,31 @@
 import os
 import json
+import thread
+import time
+import threading
 
-def checkSampleConfig(configType):
-    if configType == "C":
-        try:
-            fd = open("config/configC_sample.json")
-            return fd
-        except IOError:
-            print "Client sample config file not Found"
-            return None
+def f():
+    for i in range(1,20):
+        print "Yo..."
+        time.sleep(2)
 
-    if configType == "L":
-        try:
-            fd = open("config/configL_sample.json")
-            return fd
-        except IOError:
-            print "Client sample config file not Found"
-            return None
 
-    if configType == "W":
-        try:
-            fd = open("config/configW_sample.json")
-            return fd
-        except IOError:
-            print "Client sample config file not Found"
-            return None
+def g():
+    for i in range(1,5):
+        print "Go..."
+        time.sleep(3)
+
+threads= []
+#threads.append(thread.start_new_thread(f,()))
+#threads.append(thread.start_new_thread(g,()))
+
+t1 = threading.Thread(target=f)
+t1.start()
+threads.append(t1)
+
+t2 = threading.Thread(target=g)
+t2.start()
+threads.append(t2)
+
+for t in threads:
+    t.join()
