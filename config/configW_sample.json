@@ -1,5 +1,5 @@
 {
-  "@name": "WORKER",
+  "@name": "worker",
   "worker": {
     "clients": ["<C1-ip>", "<C2-ip>"],
     "leader": "<leader-ip>",

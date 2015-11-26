@@ -63,10 +63,63 @@ class sqdW:
     '''
 
     def __init__(self):
+        self.configFile = "configW.json"
+        self.configDir = "/etc/sqd"
+        self.baseConfigFile = "config.json"
+
+        self.config = dict()
+        self.workerConfig = dict()
+
+        if utils.checkCreateDir (self.configDir):
+            if not os.path.exists(os.path.join(self.configDir, self.configFile )) \
+                    and not os.path.exists(os.path.join(self.configDir, self.baseConfigFile )) :
+                self.createFromSample()
+                print "Config created from sample..."
+            else:
+                print "Configs are messed up, please check and clean. "
+                return
+
+        if os.path.exists (os.path.join (self.configDir, self.configFile )):
+            self.workerConfig = utils.readJSON(os.path.join (self.configDir, self.configFile ))
+            print "Worker config updated..."
+
+        if os.path.exists(os.path.join(self.configDir, self.baseConfigFile )):
+            self.config = utils.readJSON(os.path.join(self.configDir, self.baseConfigFile))
+            print "Base config updated..."
+
+        pass
+
+    def createFromSample(self):
+
+        # [TODO] DO clean cluster start with only self as part of fresh cluster
+        # for now on the fresh start we initialize using the sample config, which is created manually
+
+        confL = utils.readJSON("config/configW_sample.json")
+        utils.writeJSON(os.path.join(self.configDir, self.configFile), confL)
+
+        conf = utils.readJSON("config/config_sample.json")
+        utils.writeJSON(os.path.join(self.configDir, self.baseConfigFile), conf)
+
+
+        pass
+
+    def initWorker(self):
+        # read the raw config (Created from sample)
+        # clean worker/clients, worker/leader , worker/cluster, worker/game
+
+        confType = self.leaderConfig["@name"]
+
+        self.workerConfig[confType]["clients"] =[]
+        self.workerConfig[confType]["leader"] = ""
+        self.workerConfig[confType]["cluster"] = ""
+        self.workerConfig[confType]["game"] = -1
+
+        utils.writeJSON(os.path.join(self.configDir, self.configFile), self.workerConfig)
+        print "Worker config had been modified..."
         pass
 
     def addToCluster (self, leaderIP):
-        # askes leader to add itself to the cluster
+        # asks leader to add itself to the cluster
         pass
 
     def addClient(self):
@@ -187,6 +240,15 @@ class sqdL:
         #remove client, breaad its relation with the worker
         pass
 
+
+
+class sender:
+
+    def __init__(self, daemon):
+        # daemon is the class object, ie. sqdL, sqdW or sqdC
+        self.daemon = daemon
+
+    def initSender(self):
 
 
 
