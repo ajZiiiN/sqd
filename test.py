@@ -7,6 +7,7 @@ import threading
 def f():
     for i in range(1,20):
         print "Yo..."
+        print f.__myname__
         time.sleep(2)
 
 

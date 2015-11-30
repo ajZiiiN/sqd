@@ -94,3 +94,16 @@ LEADER:
 	keep checking on Client and Workers being alive and doing their job
 	keep tuning data load
 	
+==========
+TODAY
+
+start cluster/leader
+add worker
+add client
+
+kill worker
+restart worker
+rejoin worker
+
+kill leader
+restart leader

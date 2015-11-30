@@ -3,7 +3,8 @@
 import utils
 import os
 import genMsgId as generator
-
+import zmq_test.msgClient as Cl
+import zmq_test.msgServer as Ser
 
 
 
@@ -164,6 +165,8 @@ class sqdL:
 
         self.config = dict()
         self.leaderConfig = dict()
+        self.messages = dict()
+
 
         if utils.checkCreateDir(self.configDir):
             if not os.path.exists(os.path.join(self.configDir, self.configFile )) \
@@ -208,6 +211,8 @@ class sqdL:
         self.leaderConfig[confType]["relation"] = dict()
         self.leaderConfig[confType]["workers"] = []
         self.leaderConfig[confType]["cluster"] = ""
+        self.leaderConfig[confType]["idle_workers"] = []
+        self.leaderConfig[confType]["new"] = False
 
         # resets leader/workers with host
         host = self.leaderConfig[confType]["host"]
@@ -224,13 +229,15 @@ class sqdL:
 
     def addClient(self, clientIP):
         # Setting up connection between a client and a Worker
-
-
         pass
 
     def addWorker(self):
         # adding worker to cluster
+        # ---
+        # Response handeler for new worker coming in
+        # If workers name
         pass
+
 
     def removeWorker(self):
         #remove worker from client and break its relation with all clients
@@ -239,6 +246,7 @@ class sqdL:
     def removeClient(self):
         #remove client, breaad its relation with the worker
         pass
+
 
 
 
