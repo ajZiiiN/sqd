@@ -30,7 +30,14 @@ class msgClient:
         while True:
             try:
                 print "From Client Recieve.."
-                msg = self.socket.recv(zmq.NOBLOCK)
+
+                poller = zmq.Poller()
+                poller.register(self.socket, zmq.POLLIN)
+
+                socks = dict(poller.poll())
+
+                if self.socket in socks and socks[self.socket] == zmq.POLLIN:
+                    msg = self.socket.recv(zmq.NOBLOCK)
 
                 #id, msgDict = utils.resolveMsg(msg)
                 #self.inbox[id] = msgDict
@@ -40,39 +47,40 @@ class msgClient:
                 print e
                 print "Din recieve, Recovering...."
                 time.sleep(1)
+                continue
             except:
                 print "[Client-ERROR:recieve ] Something went Wrong.."
                 return
 
     def send(self, msg=None):
 
-        while True:
-            try:
+        try:
 
-                if msg == None:
-                    msgS = "MSG to send: "
-                else:
-                    msgS = msg
-                print "Client: sending..."
-                self.socket.send(msgS, zmq.NOBLOCK)
-                time.sleep(3)
-                
-            except zmq.ZMQError as e:
-                print e
-                print "Could not send, Recovering...."
-                time.sleep(3)
-                continue
-            except:
-                print "[Client-ERROR:recieve] Something went wrong.."
-                return
+            if msg == None:
+                msgS = "MSG to send: "
+            else:
+                msgS = msg
+            print "Client: sending..."
+            self.socket.send(msgS, zmq.NOBLOCK)
+            time.sleep(3)
+
+        except zmq.ZMQError as e:
+            print e
+            print "Could not send, Recovering...."
+            time.sleep(3)
+        except:
+            print "[Client-ERROR:recieve] Something went wrong.."
+            return
 
 
     def run(self):
 
         self.socket.send("Heartbeat")
+        '''
         t1 = Process(target=self.send)
         t1.start()
         self.threads.append(t1)
+        '''
 
         t2 = Process(target=self.recieve)
         t2.start()

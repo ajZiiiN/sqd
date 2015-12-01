@@ -31,7 +31,14 @@ class msgServer:
         while True:
             try:
                 print "From Server Recieve.."
-                msg = self.socket.recv(zmq.NOBLOCK)
+
+                poller = zmq.Poller()
+                poller.register(self.socket, zmq.POLLIN)
+
+                socks = dict(poller.poll())
+
+                if self.socket in socks and socks[self.socket] == zmq.POLLIN:
+                    msg = self.socket.recv(zmq.NOBLOCK)
 
                 #id, msgDict = utils.resolveMsg(msg)
                 #self.inbox[id] = msgDict
@@ -47,34 +54,35 @@ class msgServer:
                 return
 
     def send(self, msg=None):
-        while True:
-            try:
-                if msg == None:
-                    msgS = "MSG to send: "
-                else:
-                    msgS = msg
 
-                print "Server: sending..."
-                self.socket.send(msgS, zmq.NOBLOCK)
-                time.sleep(3)
+        try:
+            if msg == None:
+                msgS = "MSG to send: "
+            else:
+                msgS = msg
 
-            except zmq.ZMQError as e:
-                print e
-                print "Server-Send: Could not send, Recovering...."
-                time.sleep(3)
-            except:
-                print "Server-Send: Something went wrong.."
-                return
+            print "Server: sending..."
+            self.socket.send(msgS, zmq.NOBLOCK)
+            time.sleep(3)
+
+        except zmq.ZMQError as e:
+            print e
+            print "Server-Send: Could not send, Recovering...."
+            time.sleep(3)
+        except:
+            print "Server-Send: Something went wrong.."
+            return
 
 
     def run(self):
 
         self.socket.send("Heartbeat")
 
+        '''
         t1 = Process(target=self.send)
         t1.start()
         self.threads.append(t1)
-
+        '''
         t2 = Process(target=self.recieve)
         t2.start()
         self.threads.append(t2)
