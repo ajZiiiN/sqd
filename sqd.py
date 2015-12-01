@@ -21,6 +21,11 @@ It can be initialized with set of clients and workers.
 import logging
 import time
 import argparse
+import sqdRunner as sqdR
+from zmq_test.msgServer import msgServer
+from zmq_test.msgClient import msgClient
+import utils as u
+
 
 
 #third party libs
@@ -38,8 +43,14 @@ class App:
 
     def run(self):
         while True:
-            #Main code goes here ...
-            #Note that logger level needs to be set to logging.DEBUG before this shows up in the logs
+            # Main code goes here ...
+
+
+            # get localhost msgServer
+            # start handelling cli messages [cli message reader]
+
+
+
             logger.debug("Debug message")
             logger.info("Info message")
             logger.warn("Warning message")
@@ -62,19 +73,4 @@ daemon_runner.daemon_context.files_preserve=[handler.stream]
 daemon_runner.do_action()
 
 
-def main():
-    parser = argparse.ArgumentParser(description='Start Squirrel Daemon as Leader, Worker or Client...')
 
-
-    parser.add_argument('--mode',nargs=2, choices=['client', 'leader', 'worker', 'start', 'stop', 'restart'],
-                        help='sum the integers (default: find the max)')
-
-    parser.add_argument('--status', choices=['full', 'mode'])
-
-    args = parser.parse_args()
-
-    if args.mode != None:
-        if args.mode[0] == "client":
-            if args.mode[0]
-    print "MODE: ", args.mode
-    print "status: ", args.status

@@ -8,6 +8,8 @@ from zmq_test.msgClient import msgClient
 # add worker
 # add client
 
+
+
 class sqdRunner:
 
     def __init__(self):
@@ -18,9 +20,25 @@ class sqdRunner:
         self.obj["leader"] = None
         self.obj["worker"] = None
         self.obj["client"] = None
+        self.obj["msgServer"] = None
+
+        self.job_functions = {
+            "leader": {
+                "start": self.startLeaderRunner,
+                "stop" : self.stopLeaderRunner
+
+            },
+            "worker": {
+                "start": self.startWorkerRunner,
+                "stop" : self.stopWorkerRunner
+
+            }
+        }
 
 
         pass
+
+
 
     def startLeader(self):
         # get new sqdL object
@@ -64,6 +82,9 @@ class sqdRunner:
     def stopLeader(self):
         pass
 
+    def stopLeaderRunner(self):
+        pass
+
     def restartLeader(self):
         pass
 
@@ -89,10 +110,32 @@ class sqdRunner:
         # Simultaneously we Leader to do addWorker, which starts a msgClient at the worker's end
         pass
 
+    def startWorkerRunner(self):
+        pass
+
+    def stopWorkerRunner(self):
+        pass
+
     def stopWorker(self):
         pass
 
     def restartWorker(self):
         pass
 
+    def doJob(self, msg):
+        pass
 
+
+    def cliMsgReader(self):
+
+        while True:
+            msgObj = self.obj["msgServer"]
+
+            for msgId in msgObj.inbox:
+                if msgObj.inbox[msgId] in [True, False]:
+                    print "Message id:%s , return: %s" % (msgId, msgObj.inbox[msgId])
+                    del msgObj.outbox[msgId]
+                self.doJob(msgObj.inbox[msgId])
+
+                # [TODO] is any inbox message had time more than threshold, it must be removed.
+        pass

@@ -84,26 +84,53 @@ def convertIpToDir(ip):
     return ip.replace(".","-")
 
 def resolveMsg(msg):
-    M = dict()
-    components = msg.split('::')
-    id = components[0]
-    M["type"] = components[1]
-    M["sName"] = components[2]
-    M["rName"] = components[3]
-    M["time"] = components[4]
-    M["opName"] = components[5]
 
-    if components[6][0] == '(' and components[6][-1] == ')':
-        M["args"] = eval(components[6])
+
+    if resolveCliMsg(msg) != None:
+        return resolveCliMsg(msg)
     else:
-        print "Arguments not a tuple..."
-        M[args] = tuple()
+        M = dict()
+        components = msg.split('::')
+        id = components[0]
+        M["type"] = components[1]
+        M["sName"] = components[2]
+        M["rName"] = components[3]
+        M["time"] = components[4]
+        M["opName"] = components[5]
 
-    return (id,M)
+        if components[6][0] == '(' and components[6][-1] == ')':
+            M["args"] = eval(components[6])
+        else:
+            print "Arguments not a tuple..."
+            M[args] = tuple()
+
+        return (id,M)
+
+    # [TODO] except array out of index error
 
 def createMsg(id, type, sName, rName, time, opName, args):
     msg = str(id)
     msg += "::" + str(type) + "::" + str(sName) + "::" + str(rName)
     msg += "::" + str(time) + "::" + str(opName) + "::" + str(args)
 
-    return msgtu
+    return msg
+
+def resolveCliMsg(msg):
+
+    components = msg.split("::")
+    if components[0] == "CLI":
+        M = dict()
+        M['op'] = components[1]
+        M['args'] = tuple()
+
+        if components[2][0] == '(' and components[6][-1] == ')':
+            M['args'] = eval(components[2])
+        return "CLI", M
+    else:
+        return None
+
+def createCliMsg(op,args):
+    msg = "CLI::"
+    msg+= str(op) + "::" + str(args)
+
+    return msg

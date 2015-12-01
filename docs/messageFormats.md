@@ -50,7 +50,14 @@ Leader to Client
 * Use this worker :: [6, A]
 
 ===============
+CLI:
 
+sqd [--mode [client|leader|worker] [start|stop|restart]] 
+    [--status [full|mode] ]
+
+CLI::[mode|status]::args
+
+===============
 Handle timeouts
 1. Using reviev timeout socket.recv(timeout=1024)
 2. Using hearbeats
