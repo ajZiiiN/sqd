@@ -5,6 +5,15 @@ import time
 import thread
 import threading
 from multiprocessing import Process
+import logging
+
+
+logger = logging.getLogger("ServerLog")
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+handler = logging.FileHandler("/Users/ajeetjha/zi/sqd/logs/msgServer.log")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 class msgServer:
 
@@ -30,27 +39,24 @@ class msgServer:
 
         while True:
             try:
-                print "From Server Recieve.."
+                logger.info("From Server Recieve..")
+                #print "From Server Recieve.."
 
-                poller = zmq.Poller()
-                poller.register(self.socket, zmq.POLLIN)
-
-                socks = dict(poller.poll())
-
-                if self.socket in socks and socks[self.socket] == zmq.POLLIN:
-                    msg = self.socket.recv(zmq.NOBLOCK)
+                msg = self.socket.recv(zmq.NOBLOCK)
 
                 #id, msgDict = utils.resolveMsg(msg)
                 #self.inbox[id] = msgDict
-                print "Server-Got: " + msg
+                #print "Server-Got: " + msg
+                logger.info("Server-Got: " + msg)
+                time.sleep(5)
 
             except zmq.ZMQError as e:
-                print e
-                print "Server-Recieve: Din recieve, Recovering...."
-                time.sleep(1)
+                logger.info(e)
+                logger.info("Server-Recieve: Din recieve, Recovering....")
+                time.sleep(5)
                 continue
             except:
-                print "Server-Recieve: Something went Wrong.."
+                logger.info("Server-Recieve: Something went Wrong..")
                 return
 
     def send(self, msg=None):
@@ -63,12 +69,12 @@ class msgServer:
 
             print "Server: sending..."
             self.socket.send(msgS, zmq.NOBLOCK)
-            time.sleep(3)
+
 
         except zmq.ZMQError as e:
             print e
             print "Server-Send: Could not send, Recovering...."
-            time.sleep(3)
+
         except:
             print "Server-Send: Something went wrong.."
             return
@@ -83,18 +89,12 @@ class msgServer:
         t1.start()
         self.threads.append(t1)
         '''
-        t2 = Process(target=self.recieve)
+        t2 = threading.Thread(target=self.recieve)
+        t2.daemon = True
         t2.start()
         self.threads.append(t2)
-
 
     def stop(self):
         for p in self.threads:
             p.terminate()
 
-def getNewServer(ip, port=None):
-    cli = msgServer(ip)
-
-    cli.run()
-
-    return cli

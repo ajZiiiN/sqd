@@ -5,7 +5,14 @@ import time
 import threading
 import utils
 from multiprocessing import Process
+import logging
 
+logger = logging.getLogger("ClientLog")
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+handler = logging.FileHandler("/Users/ajeetjha/zi/sqd/logs/msgClient.log")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 class msgClient:
     def __init__(self, ip, port=None):
@@ -29,27 +36,23 @@ class msgClient:
 
         while True:
             try:
-                print "From Client Recieve.."
+                logger.info("From Client Recieve..")
+                #print "From Client Recieve.."
 
-                poller = zmq.Poller()
-                poller.register(self.socket, zmq.POLLIN)
-
-                socks = dict(poller.poll())
-
-                if self.socket in socks and socks[self.socket] == zmq.POLLIN:
-                    msg = self.socket.recv(zmq.NOBLOCK)
+                msg = self.socket.recv(zmq.NOBLOCK)
 
                 #id, msgDict = utils.resolveMsg(msg)
                 #self.inbox[id] = msgDict
 
-                print "Client-Got: " + msg
+                #print "Client-Got: " + msg
+                logger.info("Client-Got: " + msg)
+                time.sleep(5)
             except zmq.ZMQError as e:
-                print e
-                print "Din recieve, Recovering...."
-                time.sleep(1)
-                continue
+                logger.info(e)
+                logger.info("Din recieve, Recovering....")
+                time.sleep(5)
             except:
-                print "[Client-ERROR:recieve ] Something went Wrong.."
+                logger.info("[Client-ERROR:recieve ] Something went Wrong..")
                 return
 
     def send(self, msg=None):
@@ -62,12 +65,10 @@ class msgClient:
                 msgS = msg
             print "Client: sending..."
             self.socket.send(msgS, zmq.NOBLOCK)
-            time.sleep(3)
 
         except zmq.ZMQError as e:
             print e
             print "Could not send, Recovering...."
-            time.sleep(3)
         except:
             print "[Client-ERROR:recieve] Something went wrong.."
             return
@@ -82,7 +83,8 @@ class msgClient:
         self.threads.append(t1)
         '''
 
-        t2 = Process(target=self.recieve)
+        t2 = threading.Thread(target=self.recieve)
+        t2.daemon = True
         t2.start()
         self.threads.append(t2)
 
@@ -94,7 +96,7 @@ class msgClient:
 def getNewClient(ip, port=None):
     cli = msgClient(ip)
 
-    cli.run()
+    #cli.run()
 
     return cli
 
