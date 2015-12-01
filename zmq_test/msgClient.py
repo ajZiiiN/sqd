@@ -3,58 +3,85 @@ import random
 import sys
 import time
 import threading
+import utils
+from multiprocessing import Process
 
 
 class msgClient:
-    def __init__(self):
+    def __init__(self, ip, port=None):
 
-        self.port = "5556"
+        if port == None:
+            self.port = "5556"
+        else:
+            self.port = str(port)
+
         self.threads = []
+        self.inbox = dict()
+        self.outbox= dict()
+        self.ip = ip
 
-        context = zmq.Context()
-        self.socket = context.socket(zmq.PAIR)
-        self.socket.connect("tcp://172.16.0.134:%s" % self.port)
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.PAIR)
+        self.socket.connect("tcp://%s:%s" % (self.ip, self.port))
 
 
     def recieve(self):
 
         while True:
             try:
+                print "From Client Recieve.."
                 msg = self.socket.recv(zmq.NOBLOCK)
-                print "Got: " + msg
+
+                #id, msgDict = utils.resolveMsg(msg)
+                #self.inbox[id] = msgDict
+
+                print "Client-Got: " + msg
             except zmq.ZMQError as e:
                 print e
                 print "Din recieve, Recovering...."
-                time.sleep(5)
+                time.sleep(1)
             except:
-                print "[ERROR:recieve ] Something went Wrong.."
+                print "[Client-ERROR:recieve ] Something went Wrong.."
                 return
 
-    def send(self):
+    def send(self, msg=None):
 
         while True:
             try:
-                msgS = raw_input("MSG to send: ")
+
+                if msg == None:
+                    msgS = "MSG to send: "
+                else:
+                    msgS = msg
+                print "Client: sending..."
                 self.socket.send(msgS, zmq.NOBLOCK)
+                time.sleep(3)
+                
             except zmq.ZMQError as e:
                 print e
                 print "Could not send, Recovering...."
                 time.sleep(3)
+                continue
             except:
-                print "[ERROR:recieve ] Something went wrong.."
+                print "[Client-ERROR:recieve] Something went wrong.."
                 return
 
 
     def run(self):
 
         self.socket.send("Heartbeat")
-        t1 = threading.Thread(target=self.send)
+        t1 = Process(target=self.send)
         t1.start()
         self.threads.append(t1)
 
-        t2 = threading.Thread(target=self.recieve)
+        t2 = Process(target=self.recieve)
         t2.start()
         self.threads.append(t2)
 
         for t in self.threads:
             t.join()
+
+    def stop(self):
+        for p in self.threads:
+            p.terminate()
+

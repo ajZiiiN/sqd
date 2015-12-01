@@ -70,6 +70,11 @@ class sqdW:
 
         self.config = dict()
         self.workerConfig = dict()
+        self.msgObj = None # This is msgServer, initialized when we start the worker
+
+        self.jobMap = {
+            "addToCluster" : self.addToCluster
+        }
 
         if utils.checkCreateDir (self.configDir):
             if not os.path.exists(os.path.join(self.configDir, self.configFile )) \
@@ -114,13 +119,16 @@ class sqdW:
         self.workerConfig[confType]["leader"] = ""
         self.workerConfig[confType]["cluster"] = ""
         self.workerConfig[confType]["game"] = -1
+        self.workerConfig[confType]["new"] = False
 
         utils.writeJSON(os.path.join(self.configDir, self.configFile), self.workerConfig)
         print "Worker config had been modified..."
         pass
 
     def addToCluster (self, leaderIP):
+
         # asks leader to add itself to the cluster
+
         pass
 
     def addClient(self):
@@ -152,6 +160,31 @@ class sqdW:
         # keep the config update
         pass
 
+    def doJob(self, msg):
+        # for this message do something
+
+
+
+        # the msg is a dictionary
+        # return True if success else False
+
+        # if job is done perfectly or inperfectly, log and delete object
+        # return True or False as object
+
+        pass
+
+    def msgReader(self):
+
+        while True:
+            for msgId in self.msgObj:
+                if self.msgObj.inbox[msgId] in [True, False]:
+                    print "Message id:%s , return: %s" % (msgId, self.msgObj.inbox[msgId])
+                    del self.msgObj.outbox[msgId]
+                self.doJob(self.msgObj.inbox[msgId])
+
+                # [TODO] is any inbox message had time more than threshold, it must be removed.
+        pass
+
 
 class sqdL:
     '''
@@ -165,7 +198,7 @@ class sqdL:
 
         self.config = dict()
         self.leaderConfig = dict()
-        self.messages = dict()
+        self.workers = dict() # mapping between ip and msgObject || each message object has inbox
 
 
         if utils.checkCreateDir(self.configDir):
@@ -245,6 +278,35 @@ class sqdL:
 
     def removeClient(self):
         #remove client, breaad its relation with the worker
+        pass
+
+    def doJob(self, msg):
+        # for this message do something
+
+
+
+        # the msg is a dictionary
+        # return True if success else False
+
+        # if job is done perfectly or inperfectly, log and delete object
+        # return True or False as object
+
+        pass
+
+    def msgReader(self):
+
+        while True:
+            for worker in self.workers:
+                msgObj = self.workers[worker]
+
+
+                for msgId in msgObj.inbox:
+                    if msgObj.inbox[msgId] in [True, False]:
+                        print "Message id:%s , return: %s" % (msgId, msgObj.inbox[msgId])
+                        del msgObj.outbox[msgId]
+                    self.doJob(msgObj.inbox[msgId])
+
+            # [TODO] is any inbox message had time more than threshold, it must be removed.
         pass
 
 

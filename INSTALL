@@ -2,3 +2,4 @@
 sudo -H pip install requests[security]
 sudo apt-get install g++
 sudo -H pip install pyzmq-static
+sudo -H pip install python-daemon || https://github.com/arnaudsj/python-daemon/tree/master/daemonq

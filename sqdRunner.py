@@ -1,5 +1,7 @@
 
 import sqdHelper as sqdH
+from zmq_test.msgServer import msgServer
+from zmq_test.msgClient import msgClient
 
 
 # start cluster/leader
@@ -10,20 +12,53 @@ class sqdRunner:
 
     def __init__(self):
         #initialize process ID to stop while they are running
-        self.leaders = []
-        self.workers = []
-        self.clients = []
+        self.obj = dict()
+        #self.processes = dict()
+
+        self.obj["leader"] = None
+        self.obj["worker"] = None
+        self.obj["client"] = None
+
+
         pass
 
     def startLeader(self):
         # get new sqdL object
+        Leader = sqdH.sqdL()
+        self.obj["leader"] = Leader
+
         # init cluster if new
+        if Leader.leaderConfig["new"] == True :
+            Leader.initCluster()
+
+
+
         # handle difference between new and and existing cluster
         # is config is new, initCluster
+        host = Leader.leaderConfig["leader"]["host"]
 
-        # create msg client for each workers and send ask to each one of them
+        for worker in Leader.leaderConfig["leader"]["workers"]:
+            Leader.workers[worker] = msgClient()
+            Leader.workers[worker].run()
+
+        # for each worker , add that worker
+            # while adding, start a msgClient for that worker
+            # store in leader.workers
+            # run each msgClient
+
+        # Start subprocess for msgHandler
+
+        # start a subprocess to handleMessages, pass leaderObject in it
+
+        # create msg client for each workers and send ack to each one of them
         # Create a message dictionary for response maintaining all messages currently being sent and waiting for ack
-        # create
+        # create a worker on own host
+
+        pass
+
+    def startLeaderRunner(self):
+
+        # start a subprocess for startLeader
         pass
 
     def stopLeader(self):
@@ -33,6 +68,25 @@ class sqdRunner:
         pass
 
     def startWorker(self):
+        # get a new sqdW object
+        worker = sqdH.sqdW()
+
+        if worker.workerConfig["worker"]["new"] == True:
+            worker.initWorker()
+
+        # if the worker is new worker
+        # init it
+
+        # start the msgServer
+        host = worker.workerConfig["worker"]["host"]
+        worker.msgObj = msgServer(host)
+
+        print "Running worker msgServer..."
+        worker.msgObj.run()
+
+
+
+        # Simultaneously we Leader to do addWorker, which starts a msgClient at the worker's end
         pass
 
     def stopWorker(self):

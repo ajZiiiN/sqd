@@ -5,6 +5,7 @@
     "leader": "<leader-ip>",
     "cluster": "<cluster-id>",
     "game": "<game-id>",
-    "host": "<self-ip>"
+    "host": "<self-ip>",
+    "new": true
   }
 }
