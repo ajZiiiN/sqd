@@ -87,9 +87,14 @@ class msgServer:
         t2.start()
         self.threads.append(t2)
 
-        for t in self.threads:
-            t.join()
 
     def stop(self):
         for p in self.threads:
             p.terminate()
+
+def getNewServer(ip, port=None):
+    cli = msgServer(ip)
+
+    cli.run()
+
+    return cli

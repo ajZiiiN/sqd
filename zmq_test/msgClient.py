@@ -86,10 +86,17 @@ class msgClient:
         t2.start()
         self.threads.append(t2)
 
-        for t in self.threads:
-            t.join()
 
     def stop(self):
         for p in self.threads:
             p.terminate()
+
+def getNewClient(ip, port=None):
+    cli = msgClient(ip)
+
+    cli.run()
+
+    return cli
+
+
 
