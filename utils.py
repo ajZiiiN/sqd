@@ -123,7 +123,7 @@ def resolveCliMsg(msg):
         M['op'] = components[1]
         M['args'] = tuple()
 
-        if components[2][0] == '(' and components[6][-1] == ')':
+        if components[2][0] == '(' and components[2][-1] == ')':
             M['args'] = eval(components[2])
         return "CLI", M
     else:

@@ -2,12 +2,20 @@
 import sqdHelper as sqdH
 from zmq_test.msgServer import msgServer
 from zmq_test.msgClient import msgClient
+import logging
+import threading
 
 
 # start cluster/leader
 # add worker
 # add client
 
+logger = logging.getLogger("RunnerLog")
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+handler = logging.FileHandler("/Users/ajeetjha/zi/sqd/logs/runner.log")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 class sqdRunner:
@@ -41,12 +49,14 @@ class sqdRunner:
 
 
     def startLeader(self):
+
+        logger.info("Starting Leader....")
         # get new sqdL object
-        Leader = sqdH.sqdL()
-        self.obj["leader"] = Leader
+        self.obj["leader"] = sqdH.sqdL()
+        Leader = self.obj["leader"]
 
         # init cluster if new
-        if Leader.leaderConfig["new"] == True :
+        if Leader.leaderConfig["leader"]["new"] == True :
             Leader.initCluster()
 
 
@@ -56,7 +66,7 @@ class sqdRunner:
         host = Leader.leaderConfig["leader"]["host"]
 
         for worker in Leader.leaderConfig["leader"]["workers"]:
-            Leader.workers[worker] = msgClient()
+            Leader.workers[worker] = msgClient(worker)
             Leader.workers[worker].run()
 
         # for each worker , add that worker
@@ -75,8 +85,12 @@ class sqdRunner:
         pass
 
     def startLeaderRunner(self):
-
+        logger.info("Leader Runner... ")
         # start a subprocess for startLeader
+        t = threading.Thread(target=self.startLeader)
+        t.daemon = True
+        t.start()
+
         pass
 
     def stopLeader(self):
@@ -122,20 +136,37 @@ class sqdRunner:
     def restartWorker(self):
         pass
 
-    def doJob(self, msg):
+    def doJob(self, msgD):
+        logger.info("Doing job for: " + str(msgD))
+        if msgD["op"] == "mode":
+            print str(self.job_functions[msgD["args"][0]][msgD["args"][1]])
+            self.job_functions[msgD["args"][0]][msgD["args"][1]]()
+
         pass
 
 
     def cliMsgReader(self):
 
+        logger.info("Reading CLI messages....")
         while True:
             msgObj = self.obj["msgServer"]
 
-            for msgId in msgObj.inbox:
-                if msgObj.inbox[msgId] in [True, False]:
-                    print "Message id:%s , return: %s" % (msgId, msgObj.inbox[msgId])
-                    del msgObj.outbox[msgId]
+            keys = msgObj.inbox.keys()
+            for msgId in keys:
+                logger.info("Reading CLI inbox....")
+                M = msgObj.inbox
                 self.doJob(msgObj.inbox[msgId])
+                #del msgObj.inbox[msgId]
+                msgObj.inbox.pop(msgId,0)
 
                 # [TODO] is any inbox message had time more than threshold, it must be removed.
         pass
+
+    def reader(self):
+        t = threading.Thread(target=self.cliMsgReader)
+        t.daemon = True
+        t.start()
+
+    def startMsgServer(self, ip, port=None):
+        self.obj["msgServer"] = msgServer(ip,port)
+

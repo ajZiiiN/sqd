@@ -6,7 +6,7 @@ import thread
 import threading
 from multiprocessing import Process
 import logging
-
+import utils as u
 
 logger = logging.getLogger("ServerLog")
 logger.setLevel(logging.INFO)
@@ -43,11 +43,14 @@ class msgServer:
                 #print "From Server Recieve.."
 
                 msg = self.socket.recv(zmq.NOBLOCK)
-
-                #id, msgDict = utils.resolveMsg(msg)
-                #self.inbox[id] = msgDict
-                #print "Server-Got: " + msg
                 logger.info("Server-Got: " + msg)
+                logger.info("Processing...")
+
+                id, msgDict = u.resolveMsg(msg)
+                logger.info("Id: " + str(id) + "  msgD: " + str(msgDict))
+                self.inbox[id] = msgDict
+                logger.info("Processed...")
+
                 time.sleep(5)
 
             except zmq.ZMQError as e:
@@ -56,6 +59,7 @@ class msgServer:
                 time.sleep(5)
                 continue
             except:
+                logger.info(sys.exc_info()[0])
                 logger.info("Server-Recieve: Something went Wrong..")
                 return
 
