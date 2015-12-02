@@ -212,6 +212,7 @@ class sqdL:
             }
         }
 
+        # checking config directory
         if utils.checkCreateDir(self.configDir):
             if not os.path.exists(os.path.join(self.configDir, self.configFile )) \
                 and not os.path.exists(os.path.join(self.configDir, self.baseConfigFile )) :

@@ -115,6 +115,12 @@ class sqdRunner:
         pass
 
     def startWorkerRunner(self):
+
+        logger.info("Worker Runner... ")
+        # start a subprocess for startLeader
+        t = threading.Thread(target=self.startWorker)
+        t.daemon = True
+        t.start()
         pass
 
     def stopWorkerRunner(self):
