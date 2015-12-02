@@ -139,7 +139,9 @@ class sqdRunner:
             self.job_functions[msgD["args"][0]][msgD["args"][1]]()
 
         if msgD["op"] == "leader":
-            print str( self.obj["leader"].job_functions [msgD["args"][0]] [msgD["args"][1]] )
+            print str( self.obj["leader"].job_functions [msgD["args"][0]] [msgD["args"][2]] )
+            #self.obj["leader"].job_functions [msgD["args"][0]] [msgD["args"][2]](msgD["args"][2])
+            # calling function with ip as argument
         pass
 
 

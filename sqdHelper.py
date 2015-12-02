@@ -3,8 +3,8 @@
 import utils
 import os
 import genMsgId as generator
-import zmq_test.msgClient as Cl
-import zmq_test.msgServer as Ser
+from zmq_test.msgServer import msgServer
+from zmq_test.msgClient import msgClient
 
 
 
@@ -286,10 +286,23 @@ class sqdL:
         # Setting up connection between a client and a Worker
         pass
 
-    def addWorker(self):
+    def addWorker(self, ip):
         # adding worker to cluster
         # ---
-        # Response handeler for new worker coming in
+        print "Adding worker: " + ip
+        existingWorkersInConfig = self.leaderConfig["leader"]["workers"]
+
+        if ip not in existingWorkers:
+            self.leaderConfig["leader"]["workers"].append(ip)
+            #update config
+            utils.writeJSON(os.path.join(self.configDir, self.configFile), self.leaderConfig)
+
+        existingWorkersInServer = self.workers.keys()
+
+        if ip not in existingWorkersInServer:
+            self.workers[ip] = msgClient(ip)
+            self.workers[ip].run()
+        # Response handler for new worker coming in
         # If workers name
         pass
 
