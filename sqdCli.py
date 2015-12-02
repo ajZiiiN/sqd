@@ -13,7 +13,11 @@ def main():
 
 
     parser.add_argument('--mode',nargs=2, choices=['client', 'leader', 'worker','sqd', 'start', 'stop', 'restart'],
-                        help='sum the integers (default: find the max)')
+                        help='Primary operations: start or stop management daemon')
+
+    # choices=['client', 'worker', 'add', 'remove']
+    parser.add_argument('--leader',nargs=3,
+                        help='Secondary operations for leader: client/worker ip add/remove')
 
     parser.add_argument('--status', choices=['full', 'mode'])
 
@@ -34,6 +38,11 @@ def main():
     if args.status != None:
         msg = u.createCliMsg("status",(args.status,))
         print msg
+
+    if args.leader != None:
+        if args.leader[0] not in ["client","worker"] \
+            or args.leader[2] not in ["add", "remove"]:
+            msg = u.createCliMsg("leader",(args.mode[0],args.mode[1], args.mode[2]))
 
     print "MODE: ", args.mode
     print "status: ", args.status

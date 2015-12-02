@@ -51,7 +51,7 @@ class sqdRunner:
     def startLeader(self):
 
         logger.info("Starting Leader....")
-        # get new sqdL object
+
         self.obj["leader"] = sqdH.sqdL()
         Leader = self.obj["leader"]
 
@@ -59,20 +59,12 @@ class sqdRunner:
         if Leader.leaderConfig["leader"]["new"] == True :
             Leader.initCluster()
 
-
-
-        # handle difference between new and and existing cluster
-        # is config is new, initCluster
         host = Leader.leaderConfig["leader"]["host"]
 
         for worker in Leader.leaderConfig["leader"]["workers"]:
             Leader.workers[worker] = msgClient(worker)
             Leader.workers[worker].run()
 
-        # for each worker , add that worker
-            # while adding, start a msgClient for that worker
-            # store in leader.workers
-            # run each msgClient
 
         # Start subprocess for msgHandler
 
@@ -104,13 +96,13 @@ class sqdRunner:
 
     def startWorker(self):
         # get a new sqdW object
-        worker = sqdH.sqdW()
+        self.obj["worker"] = sqdH.sqdW()
+        worker = self.obj["worker"]
 
+        # if the worker is new worker
         if worker.workerConfig["worker"]["new"] == True:
             worker.initWorker()
 
-        # if the worker is new worker
-        # init it
 
         # start the msgServer
         host = worker.workerConfig["worker"]["host"]
@@ -118,8 +110,6 @@ class sqdRunner:
 
         print "Running worker msgServer..."
         worker.msgObj.run()
-
-
 
         # Simultaneously we Leader to do addWorker, which starts a msgClient at the worker's end
         pass
@@ -142,6 +132,8 @@ class sqdRunner:
             print str(self.job_functions[msgD["args"][0]][msgD["args"][1]])
             self.job_functions[msgD["args"][0]][msgD["args"][1]]()
 
+        if msgD["op"] == "leader":
+            print str( self.obj["leader"].job_functions [msgD["args"][0]] [msgD["args"][1]] )
         pass
 
 

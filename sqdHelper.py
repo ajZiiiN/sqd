@@ -200,6 +200,17 @@ class sqdL:
         self.leaderConfig = dict()
         self.workers = dict() # mapping between ip and msgObject || each message object has inbox
 
+        self.job_functions = {
+            "worker": {
+                "add": self.addWorker,
+                "remove" : self.removeWorker
+            },
+            "client": {
+                "add": self.addClient,
+                "remove" : self.removeClient
+
+            }
+        }
 
         if utils.checkCreateDir(self.configDir):
             if not os.path.exists(os.path.join(self.configDir, self.configFile )) \
