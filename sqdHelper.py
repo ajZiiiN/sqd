@@ -79,32 +79,42 @@ class sqdW:
         if utils.checkCreateDir (self.configDir):
             if not os.path.exists(os.path.join(self.configDir, self.configFile )) \
                     and not os.path.exists(os.path.join(self.configDir, self.baseConfigFile )) :
-                self.createFromSample()
+                self.createFromSample("all")
                 print "Config created from sample..."
             else:
                 print "Configs are messed up, please check and clean. "
-                return
+
 
         if os.path.exists (os.path.join (self.configDir, self.configFile )):
             self.workerConfig = utils.readJSON(os.path.join (self.configDir, self.configFile ))
             print "Worker config updated..."
+        else:
+            self.createFromSample("worker")
+            self.workerConfig = utils.readJSON(os.path.join (self.configDir, self.configFile ))
+            print "Worker config updated from sample..."
 
         if os.path.exists(os.path.join(self.configDir, self.baseConfigFile )):
             self.config = utils.readJSON(os.path.join(self.configDir, self.baseConfigFile))
             print "Base config updated..."
+        else:
+            self.createFromSample("main")
+            self.config = utils.readJSON(os.path.join(self.configDir, self.baseConfigFile))
+            print "Base config updated from sample...."
 
         pass
 
-    def createFromSample(self):
+    def createFromSample(self, type):
 
         # [TODO] DO clean cluster start with only self as part of fresh cluster
         # for now on the fresh start we initialize using the sample config, which is created manually
 
-        confL = utils.readJSON("config/configW_sample.json")
-        utils.writeJSON(os.path.join(self.configDir, self.configFile), confL)
+        if(type == "worker" or type =="all"):
+            confL = utils.readJSON("config/configW_sample.json")
+            utils.writeJSON(os.path.join(self.configDir, self.configFile), confL)
 
-        conf = utils.readJSON("config/config_sample.json")
-        utils.writeJSON(os.path.join(self.configDir, self.baseConfigFile), conf)
+        if(type == "main" or type =="all"):
+            conf = utils.readJSON("config/config_sample.json")
+            utils.writeJSON(os.path.join(self.configDir, self.baseConfigFile), conf)
 
 
         pass
@@ -113,7 +123,7 @@ class sqdW:
         # read the raw config (Created from sample)
         # clean worker/clients, worker/leader , worker/cluster, worker/game
 
-        confType = self.leaderConfig["@name"]
+        confType = self.workerConfig["@name"]
 
         self.workerConfig[confType]["clients"] =[]
         self.workerConfig[confType]["leader"] = ""

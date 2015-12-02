@@ -95,4 +95,20 @@ LEADER:
 	keep tuning data load
 	
 ==========
+How to install:
+
+See INSTALL
+==========
+How to run:
+----
+Leader:
+python sqdNonDaemon.py
+python sqdCli.py --mode leader start
+
+----
+Worker:
+python sqdNonDaemon.py
+python sqdCli.py --mode worker start
+
+
 
