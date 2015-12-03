@@ -42,11 +42,11 @@ class sqdC:
 
         if os.path.exists (os.path.join (self.configDir, self.configFile )):
             self.clientConfig = utils.readJSON(os.path.join (self.configDir, self.configFile ))
-            print "Worker config updated..."
+            print "Client config updated..."
         else:
             self.createFromSample("client")
             self.clientConfig = utils.readJSON(os.path.join (self.configDir, self.configFile ))
-            print "Worker config updated from sample..."
+            print "Client config updated from sample..."
 
         if os.path.exists(os.path.join(self.configDir, self.baseConfigFile )):
             self.config = utils.readJSON(os.path.join(self.configDir, self.baseConfigFile))
@@ -279,6 +279,7 @@ class sqdL:
         self.config = dict()
         self.leaderConfig = dict()
         self.workers = dict() # mapping between ip and msgObject || each message object has inbox
+        self.clients = dict() # mapping between ip and msgObject || each message object has inbox
 
         self.job_functions = {
             "worker": {
@@ -296,32 +297,41 @@ class sqdL:
         if utils.checkCreateDir(self.configDir):
             if not os.path.exists(os.path.join(self.configDir, self.configFile )) \
                 and not os.path.exists(os.path.join(self.configDir, self.baseConfigFile )) :
-                self.createFromSample()
+                self.createFromSample("all")
                 print "Config created from sample..."
             else:
                 print "Configs are messed up, please check and clean. "
-                return
 
         if os.path.exists (os.path.join (self.configDir, self.configFile )):
             self.leaderConfig = utils.readJSON(os.path.join (self.configDir, self.configFile ))
             print "Leader config updated..."
+        else:
+            self.createFromSample("leader")
+            self.leaderConfig = utils.readJSON(os.path.join (self.configDir, self.configFile ))
+            print "Leader config updated..."
+
 
         if os.path.exists(os.path.join(self.configDir, self.baseConfigFile )):
+            self.config = utils.readJSON(os.path.join(self.configDir, self.baseConfigFile))
+            print "Base config updated..."
+        else:
+            self.createFromSample("main")
             self.config = utils.readJSON(os.path.join(self.configDir, self.baseConfigFile))
             print "Base config updated..."
 
         pass
 
-    def createFromSample(self):
+    def createFromSample(self, type):
 
         # [TODO] DO clean cluster start with only self as part of fresh cluster
         # for now on the fresh start we initialize using the sample config, which is created manually
+        if(type == "leader" or type =="all"):
+            confL = utils.readJSON("config/configL_sample.json")
+            utils.writeJSON(os.path.join(self.configDir, self.configFile), confL)
 
-        confL = utils.readJSON("config/configL_sample.json")
-        utils.writeJSON(os.path.join(self.configDir, self.configFile), confL)
-
-        conf = utils.readJSON("config/config_sample.json")
-        utils.writeJSON(os.path.join(self.configDir, self.baseConfigFile), conf)
+        if(type == "main" or type =="all"):
+            conf = utils.readJSON("config/config_sample.json")
+            utils.writeJSON(os.path.join(self.configDir, self.baseConfigFile), conf)
 
 
         pass
@@ -376,6 +386,25 @@ class sqdL:
         # If workers name
         pass
 
+    def addClient(self, ip):
+        # adding client to cluster
+        # ---
+        print "Adding client: " + ip
+        existingClientsInConfig = self.leaderConfig["leader"]["clients"]
+
+        if ip not in existingClientsInConfig:
+            self.leaderConfig["leader"]["clients"].append(ip)
+            #update config
+            utils.writeJSON(os.path.join(self.configDir, self.configFile), self.leaderConfig)
+
+        existingClientsInServer = self.clients.keys()
+
+        if ip not in existingClientsInServer:
+            self.clients[ip] = msgClient(ip)
+            self.clients[ip].run()
+        # Response handler for new worker coming in
+        # If workers name
+        pass
 
     def removeWorker(self):
         #remove worker from client and break its relation with all clients
@@ -413,6 +442,7 @@ class sqdL:
 
             # [TODO] is any inbox message had time more than threshold, it must be removed.
         pass
+
 
 
 

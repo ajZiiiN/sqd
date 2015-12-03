@@ -43,9 +43,11 @@ def main():
         print msg
 
     if args.leader != None:
-        if args.leader[0] not in ["client","worker"] \
-            or args.leader[2] not in ["add", "remove"]:
-            msg = u.createCliMsg("leader",(args.mode[0],args.mode[1], args.mode[2]))
+        if args.leader[0] in ["client","worker"] \
+            and args.leader[2] in ["add", "remove"]:
+            msg = u.createCliMsg("leader",(args.leader[0],args.leader[1], args.leader[2]))
+            print msg
+            cli.send(msg)
 
     print "MODE: ", args.mode
     print "status: ", args.status
