@@ -3,16 +3,12 @@ import random
 import sys
 import time
 import threading
-import utils
+import utils as u
 from multiprocessing import Process
 import logging
 
-logger = logging.getLogger("ClientLog")
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler = logging.FileHandler("/Users/ajeetjha/zi/sqd/logs/msgClient.log")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+
+logger = u.getLogger("ClientLog", "/Users/ajeetjha/zi/sqd/logs/msgClient.log")
 
 class msgClient:
     def __init__(self, ip, port=None):

@@ -8,12 +8,8 @@ from multiprocessing import Process
 import logging
 import utils as u
 
-logger = logging.getLogger("ServerLog")
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler = logging.FileHandler("/Users/ajeetjha/zi/sqd/logs/msgServer.log")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+
+logger = u.getLogger("ServerLog", "/Users/ajeetjha/zi/sqd/logs/msgServer.log")
 
 class msgServer:
 

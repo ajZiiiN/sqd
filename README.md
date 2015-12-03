@@ -117,14 +117,32 @@ TODO
 addClient
 	allocate worker
 	start transfer
-	set gamei
+	set gameID
 
 stop worker [from Leader]
 remove worker [From leader]
 
+[DONE] get files from client[worker functionality]
+
+get ack for each cli command
+
+
 [set sample, local script to configure hosts]
 [config.json usage by runner]
 [set common logger]: runner, msgClient, msgServer
+
+-----------
+Negative cases
+---
+Cli command validation 
+config validation
+Show status of workers, clients at leader
+Stop workers
+
+Show if client is not available [if Send fails]
+
+
+---
 
 
 

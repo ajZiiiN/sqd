@@ -1,6 +1,7 @@
 
 import json
 import os
+import logging
 
 def checkCreateDir(path):
 
@@ -137,3 +138,30 @@ def createCliMsg(op,args):
 
 def setSampleConfig():
     pass
+
+def fileTransfer(fromIp, pemKeyPath, fromPath, toPath):
+
+    #rsync command
+    # rsync --dry-run --remove-source-files -azv "ssh -i ~/.ssh/id_rsa" <source-ip>:~/home/ajha/testDir/* /Users/ajeetjha/zi/sqd/data/
+    # ex:- rsync -chavzP -e "ssh -i ~/.ssh/id_rsa" --dry-run --remove-source-files --stats  moonfrog@192.168.56.102:/home/moonfrog/testDir/* /home/moonfrog/data/
+    # rsync -chavzP --stats moonfrog@192.168.56.102:/home/moonfrog/testDir/* /home/moonfrog/data/
+
+    rsyncCmd = 'rsync -chavzP -e "ssh -i ' + pemKeyPath + '" --dry-run --remove-source-files --stats  moonfrog@' + \
+        fromIp + ':' + fromPath + ' ' + toPath
+
+    print "Executing: " ,rsyncCmd
+    # Use stats to create the status info
+
+    pass
+
+def getLogger(logger_name, log_file, level=logging.INFO):
+    l = logging.getLogger(logger_name)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fileHandler = logging.FileHandler(log_file)
+    fileHandler.setFormatter(formatter)
+
+
+    l.setLevel(level)
+    l.addHandler(fileHandler)
+
+    return l
