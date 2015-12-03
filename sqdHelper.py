@@ -6,7 +6,8 @@ import genMsgId as generator
 from zmq_test.msgServer import msgServer
 from zmq_test.msgClient import msgClient
 import utils as u
-from datetime import datetime
+import datetime
+import time
 
 
 
@@ -436,7 +437,7 @@ class sqdL:
         type = "R"
         sName = "sqdL/checkWorker"
         rName = "sqdW"
-        time = datetime.now()
+        time = datetime.datetime.now()
         opName = "iamAlive"
         args = tuple()
 
