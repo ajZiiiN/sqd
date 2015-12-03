@@ -5,6 +5,8 @@ import os
 import genMsgId as generator
 from zmq_test.msgServer import msgServer
 from zmq_test.msgClient import msgClient
+import utils as u
+from datetime import datetime
 
 
 
@@ -143,7 +145,8 @@ class sqdW:
         self.msgObj = None # This is msgServer, initialized when we start the worker
 
         self.jobMap = {
-            "addToCluster" : self.addToCluster
+            "addToCluster" : self.addToCluster,
+            "iamAlive" : self.iamAlive
         }
 
         if utils.checkCreateDir (self.configDir):
@@ -240,16 +243,24 @@ class sqdW:
         # keep the config update
         pass
 
-    def doJob(self, msg):
+    def iamAlive(self, id):
+        print "I am alive..."
+        msg = u.createAckMsg(id,1)
+
+        self.msgObj.send(msg)
+        self.msgObj.inbox.pop(id,0)
+        return
+
+
+
+
+    def doJob(self, id, msgD):
         # for this message do something
+        print "doing job for: ", str(msgD)
 
+        print str(self.jobMap[msgD["opName"]])
+        self.job_functions[msgD["args"][0]][msgD["args"][1]](id, msgD["args"])
 
-
-        # the msg is a dictionary
-        # return True if success else False
-
-        # if job is done perfectly or inperfectly, log and delete object
-        # return True or False as object
 
         pass
 
@@ -257,10 +268,7 @@ class sqdW:
 
         while True:
             for msgId in self.msgObj:
-                if self.msgObj.inbox[msgId] in [True, False]:
-                    print "Message id:%s , return: %s" % (msgId, self.msgObj.inbox[msgId])
-                    del self.msgObj.outbox[msgId]
-                self.doJob(self.msgObj.inbox[msgId])
+                self.doJob(msgId, self.msgObj.inbox[msgId])
 
                 # [TODO] is any inbox message had time more than threshold, it must be removed.
         pass
@@ -413,6 +421,54 @@ class sqdL:
     def removeClient(self):
         #remove client, breaad its relation with the worker
         pass
+
+    def checkWorker(self, ip):
+        # assumes that msgClient at Leader has already started
+        # --
+        # createMsg(id, type, sName, rName, time, opName, args):
+        #68926bc9cb24244f919aa03a090aa535::R::sqdC/Fname::sqdL::2015-12-02 00:02:30::addClient:<Args>
+        print "Checking Worker..."
+        ret = False
+        msgId = u.genNewId()
+        type = "R"
+        sName = "sqdL/checkWorker"
+        rName = "sqdW"
+        time = datetime.now()
+        opName = "iamAlive"
+        args = tuple()
+
+        msg = u.createMsg(msgId, type, sName, rName, time, opName, args)
+
+        # send a message to Worker through msgClient
+        if ip not in self.workers.keys():
+            print "worker not available..."
+        else:
+            id, M = u.resolveMsg(msg)
+            self.workers[ip].outbox[id] = M
+
+            self.workers[ip].send(msg)
+            print "checkWorker: " + msg
+
+            for i in range(1,30):
+                if id  in self.workers[ip].inbox.keys():
+                    ret = self.workers[ip].inbox[id]
+                    self.workers[ip].inbox.pop(id,0)
+                    self.workers[ip].outbox.pop(id,0)
+                    return ret
+                else:
+                    time.sleep(2)
+
+        return ret
+
+
+        # if send is success, its good
+        # wait on its inbox to get an ack
+
+        # Return True on Success and False on failure
+        # its a blocking call
+
+        pass
+
 
     def doJob(self, msg):
         # for this message do something

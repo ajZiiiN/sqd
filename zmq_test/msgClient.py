@@ -37,8 +37,9 @@ class msgClient:
 
                 msg = self.socket.recv(zmq.NOBLOCK)
 
-                #id, msgDict = utils.resolveMsg(msg)
-                #self.inbox[id] = msgDict
+                id, msgDict = utils.resolveMsg(msg)
+                logger.info("Id: " + str(id) + "  msgD: " + str(msgDict))
+                self.inbox[id] = msgDict
 
                 #print "Client-Got: " + msg
                 logger.info("Client-Got: " + msg)

@@ -2,6 +2,8 @@
 import json
 import os
 import logging
+import md5
+from datetime import datetime
 
 def checkCreateDir(path):
 
@@ -15,6 +17,11 @@ def checkCreateDir(path):
             print e
             return False
 
+def genNewId():
+    seed = datetime.now()
+    id = md5.new(str(seed))
+
+    return id.hexdigest()
 
 def checkCreateFile(path, fileName):
 
@@ -89,6 +96,8 @@ def resolveMsg(msg):
 
     if resolveCliMsg(msg) != None:
         return resolveCliMsg(msg)
+    elif resolveAckMsg(msg) != None:
+        return resolveAckMsg(msg)
     else:
         M = dict()
         components = msg.split('::')
@@ -130,10 +139,30 @@ def resolveCliMsg(msg):
     else:
         return None
 
+def resolveAckMsg(msg):
+    components = msg.split("::")
+
+    if len(components) == 3:
+
+        id = components[0]
+
+        status = int(components[2])
+
+        return (id,status)
+    else:
+        return None
+
+
+
 def createCliMsg(op,args):
     msg = "CLI::"
     msg+= str(op) + "::" + str(args)
 
+    return msg
+
+# ack messages are of type id::A::[0,1] || 0 for failure 1 for success
+def createAckMsg(id, value):
+    msg = id + "::A::" + value
     return msg
 
 def setSampleConfig():
