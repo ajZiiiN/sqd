@@ -261,7 +261,7 @@ class sqdW:
         print "doing job for: ", str(msgD)
 
         print str(self.jobMap[msgD["opName"]])
-        self.job_functions[msgD["args"][0]][msgD["args"][1]](id, msgD["args"])
+        self.jobMap[msgD["args"][0]][msgD["args"][1]](id, msgD["args"])
 
 
         pass
