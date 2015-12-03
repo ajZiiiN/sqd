@@ -392,6 +392,9 @@ class sqdL:
             self.workers[ip].run()
         # Response handler for new worker coming in
         # If workers name
+        print "checking worker: ", ip
+        ret = self.checkWorker(ip)
+        print "Found: ", str(ret)
         pass
 
     def addClient(self, ip):
