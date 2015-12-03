@@ -1,10 +1,11 @@
 {
-  "@name": "CLIENT",
+  "@name": "client",
   "client": {
     "leader": "<leader-ip>",
     "worker": "<worker-ip",
     "cluster": "<cluster-id>",
     "game": "<game-id>",
-    "host": "<self-ip>"
+    "host": "172.16.0.166",
+    "new": true
   }
 }

@@ -40,6 +40,11 @@ class sqdRunner:
                 "start": self.startWorkerRunner,
                 "stop" : self.stopWorkerRunner
 
+            },
+            "client": {
+                "start": self.startClientRunner,
+                "stop" : self.stopWorkerRunner
+
             }
         }
 
@@ -130,6 +135,35 @@ class sqdRunner:
         pass
 
     def restartWorker(self):
+        pass
+
+    def startClient(self):
+        # get a new sqdW object
+        self.obj["client"] = sqdH.sqdC()
+        client = self.obj["client"]
+
+        # if the worker is new worker
+        if client.clientConfig["client"]["new"] == True:
+            client.initClient()
+
+
+        # start the msgServer
+        host = client.clientConfig["client"]["host"]
+        client.msgObj = msgServer(host)
+
+        print "Running client msgServer..."
+        client.msgObj.run()
+
+        # Simultaneously we Leader to do addClient, which starts a msgClient at the worker's end
+        pass
+
+    def startClientRunner(self):
+
+        logger.info("Client Runner... ")
+        # start a subprocess for startLeader
+        t = threading.Thread(target=self.startClient)
+        t.daemon = True
+        t.start()
         pass
 
     def doJob(self, msgD):

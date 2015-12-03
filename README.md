@@ -111,4 +111,24 @@ python sqdNonDaemon.py
 python sqdCli.py --mode worker start
 
 
+===========
+TODO
+
+addClient
+	allocate worker
+	start transfer
+	set gamei
+
+stop worker [from Leader]
+remove worker [From leader]
+
+[set sample, local script to configure hosts]
+[config.json usage by runner]
+[set common logger]: runner, msgClient, msgServer
+
+
+
+
+
+
 

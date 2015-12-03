@@ -134,3 +134,6 @@ def createCliMsg(op,args):
     msg+= str(op) + "::" + str(args)
 
     return msg
+
+def setSampleConfig():
+    pass

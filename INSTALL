@@ -3,3 +3,12 @@ sudo -H pip install requests[security]
 sudo apt-get install g++
 sudo -H pip install pyzmq-static
 sudo -H pip install python-daemon || https://github.com/arnaudsj/python-daemon/tree/master/daemonq
+--
+If Using mac
+install brona/iproute2mac
+~  brew tap brona/iproute2mac
+~  brew install iproute2mac
+
+Command to get ip:
+ip addr | grep "en0" | grep 'UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/'
+------

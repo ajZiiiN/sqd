@@ -19,6 +19,9 @@ def main():
     parser.add_argument('--leader',nargs=3,
                         help='Secondary operations for leader: client/worker ip add/remove')
 
+    parser.add_argument('--sample',nargs=1, choices=['set'],
+                        help='Secondary operations for leader: client/worker ip add/remove')
+
     parser.add_argument('--status', choices=['full', 'mode'])
 
     args = parser.parse_args()
