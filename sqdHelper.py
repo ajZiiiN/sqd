@@ -267,7 +267,7 @@ class sqdW:
         pass
 
     def msgReader(self):
-
+        print "Reading already..."
         while True:
             for msgId in self.msgObj:
                 self.doJob(msgId, self.msgObj.inbox[msgId])
@@ -276,6 +276,7 @@ class sqdW:
         pass
 
     def reader(self):
+        print "Reader for worker..."
         t = threading.Thread(target=self.msgReader)
         t.daemon = True
         t.start()
