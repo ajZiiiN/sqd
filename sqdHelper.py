@@ -437,11 +437,11 @@ class sqdL:
         type = "R"
         sName = "sqdL/checkWorker"
         rName = "sqdW"
-        time = datetime.datetime.now()
+        now = datetime.datetime.now()
         opName = "iamAlive"
         args = tuple()
 
-        msg = u.createMsg(msgId, type, sName, rName, time, opName, args)
+        msg = u.createMsg(msgId, type, sName, rName, now, opName, args)
 
         # send a message to Worker through msgClient
         if ip not in self.workers.keys():
