@@ -245,7 +245,7 @@ class sqdW:
         # keep the config update
         pass
 
-    def iamAlive(self, id):
+    def iamAlive(self, id, args=None):
         print "I am alive..."
         msg = u.createAckMsg(id,1)
 
@@ -261,7 +261,7 @@ class sqdW:
         print "doing job for: ", str(msgD)
 
         print str(self.jobMap[msgD["opName"]])
-        self.jobMap[msgD["args"][0]][msgD["args"][1]](id, msgD["args"])
+        self.jobMap[msgD["opName"]](id, msgD["args"])
 
 
         pass
