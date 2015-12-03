@@ -66,6 +66,8 @@ class sqdRunner:
             Leader.workers[worker] = msgClient(worker)
             Leader.workers[worker].run()
 
+        self.reader()
+
 
         # Start subprocess for msgHandler
 
@@ -111,6 +113,8 @@ class sqdRunner:
 
         print "Running worker msgServer..."
         worker.msgObj.run()
+
+        self.reader()
 
         # Simultaneously we Leader to do addWorker, which starts a msgClient at the worker's end
         pass

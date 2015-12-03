@@ -8,6 +8,7 @@ from zmq_test.msgClient import msgClient
 import utils as u
 import datetime
 import time
+import threading
 
 
 
@@ -274,6 +275,11 @@ class sqdW:
                 # [TODO] is any inbox message had time more than threshold, it must be removed.
         pass
 
+    def reader(self):
+        t = threading.Thread(target=self.msgReader)
+        t.daemon = True
+        t.start()
+
 
 class sqdL:
     '''
@@ -503,6 +509,12 @@ class sqdL:
 
             # [TODO] is any inbox message had time more than threshold, it must be removed.
         pass
+
+    # reader for Leader is totally different, it had to read across all messages in inbox of each of clients and workers
+    def reader(self):
+        t = threading.Thread(target=self.msgReader)
+        t.daemon = True
+        t.start()
 
 
 
