@@ -269,8 +269,10 @@ class sqdW:
     def msgReader(self):
         print "Reading already..."
         while True:
-            for msgId in self.msgObj:
-                self.doJob(msgId, self.msgObj.inbox[msgId])
+            ids = self.msgObj.inbox.keys()
+            for msgId in ids:
+                if self.msgObj.inbox[msgId]["type"] == "R":
+                    self.doJob(msgId, self.msgObj.inbox[msgId])
 
                 # [TODO] is any inbox message had time more than threshold, it must be removed.
         pass
@@ -482,9 +484,9 @@ class sqdL:
         pass
 
 
-    def doJob(self, msg):
+    def doJob(self, msgD):
         # for this message do something
-
+        print "Leader doing job for: ", str(msgD)
 
 
         # the msg is a dictionary
@@ -498,15 +500,17 @@ class sqdL:
     def msgReader(self):
 
         while True:
-            for worker in self.workers:
+            workers = self.workers.keys()
+            for worker in workers:
                 msgObj = self.workers[worker]
 
-
-                for msgId in msgObj.inbox:
+                ids = msgObj.inbox.keys()
+                for msgId in ids:
                     if msgObj.inbox[msgId] in [True, False]:
                         print "Message id:%s , return: %s" % (msgId, msgObj.inbox[msgId])
                         del msgObj.outbox[msgId]
-                    self.doJob(msgObj.inbox[msgId])
+                    if msgObj.inbox[msgId]["type"] == "R":
+                        self.doJob(msgObj.inbox[msgId])
 
             # [TODO] is any inbox message had time more than threshold, it must be removed.
         pass
