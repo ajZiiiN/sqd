@@ -42,9 +42,10 @@ class msgServer:
                 logger.info("Server-Got: " + msg)
                 logger.info("Processing...")
 
-                id, msgDict = u.resolveMsg(msg)
-                logger.info("Id: " + str(id) + "  msgD: " + str(msgDict))
-                self.inbox[id] = msgDict
+                if msg != "Heartbeat":
+                    id, msgDict = u.resolveMsg(msg)
+                    logger.info("Id: " + str(id) + "  msgD: " + str(msgDict))
+                    self.inbox[id] = msgDict
                 logger.info("Processed...")
 
                 time.sleep(5)

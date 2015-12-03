@@ -36,10 +36,10 @@ class msgClient:
                 #print "From Client Recieve.."
 
                 msg = self.socket.recv(zmq.NOBLOCK)
-
-                id, msgDict = utils.resolveMsg(msg)
-                logger.info("Id: " + str(id) + "  msgD: " + str(msgDict))
-                self.inbox[id] = msgDict
+                if msg != "Heartbeat":
+                    id, msgDict = utils.resolveMsg(msg)
+                    logger.info("Id: " + str(id) + "  msgD: " + str(msgDict))
+                    self.inbox[id] = msgDict
 
                 #print "Client-Got: " + msg
                 logger.info("Client-Got: " + msg)
@@ -49,6 +49,7 @@ class msgClient:
                 logger.info("Din recieve, Recovering....")
                 time.sleep(5)
             except:
+                logger.info(sys.exc_info()[0])
                 logger.info("[Client-ERROR:recieve ] Something went Wrong..")
                 return
 

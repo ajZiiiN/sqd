@@ -389,6 +389,7 @@ class sqdL:
         existingWorkersInServer = self.workers.keys()
 
         if ip not in existingWorkersInServer:
+            print "Starting new msgClient for: ", ip
             self.workers[ip] = msgClient(ip)
             self.workers[ip].run()
         # Response handler for new worker coming in
