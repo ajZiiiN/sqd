@@ -162,7 +162,7 @@ def createCliMsg(op,args):
 
 # ack messages are of type id::A::[0,1] || 0 for failure 1 for success
 def createAckMsg(id, value):
-    msg = id + "::A::" + value
+    msg = id + "::A::" + str(value)
     return msg
 
 def setSampleConfig():
