@@ -504,6 +504,8 @@ class sqdL:
             for worker in workers:
                 msgObj = self.workers[worker]
 
+                # [TODO] there is a race with ack handelere who delete messages and readers who read them.
+                # Solution: handel key errors
                 ids = msgObj.inbox.keys()
                 for msgId in ids:
                     if type(msgObj.inbox[msgId]) is not int and msgObj.inbox[msgId]["type"] == "R":
