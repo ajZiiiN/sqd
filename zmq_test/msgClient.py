@@ -32,7 +32,7 @@ class msgClient:
 
         while True:
             try:
-                logger.info("From Client Recieve..")
+                logger.info("From Client (%s) Recieve..." %(self.ip,))
                 #print "From Client Recieve.."
 
                 msg = self.socket.recv(zmq.NOBLOCK)
