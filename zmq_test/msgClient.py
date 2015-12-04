@@ -43,11 +43,10 @@ class msgClient:
 
                 #print "Client-Got: " + msg
                 logger.info("Client-Got: " + msg)
-                time.sleep(5)
             except zmq.ZMQError as e:
                 logger.info(e)
                 logger.info("Din recieve, Recovering....")
-                time.sleep(5)
+                time.sleep(2)
             except:
                 logger.info(sys.exc_info()[0])
                 logger.info("[Client-ERROR:recieve ] Something went Wrong..")
@@ -61,7 +60,7 @@ class msgClient:
                 msgS = "MSG to send: "
             else:
                 msgS = msg
-            print "Client: sending..."
+            print "Client: sending..." ,msgS
             self.socket.send(msgS, zmq.NOBLOCK)
 
         except zmq.ZMQError as e:

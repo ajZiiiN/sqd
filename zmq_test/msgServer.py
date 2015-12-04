@@ -48,7 +48,6 @@ class msgServer:
                     self.inbox[id] = msgDict
                 logger.info("Processed...")
 
-                time.sleep(5)
 
             except zmq.ZMQError as e:
                 logger.info(e)
@@ -68,7 +67,7 @@ class msgServer:
             else:
                 msgS = msg
 
-            print "Server: sending..."
+            print "Server: sending...", msgS
             self.socket.send(msgS, zmq.NOBLOCK)
 
 
