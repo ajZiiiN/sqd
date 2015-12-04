@@ -37,7 +37,7 @@ class msgClient:
 
                 msg = self.socket.recv(zmq.NOBLOCK)
                 if msg != "Heartbeat":
-                    id, msgDict = utils.resolveMsg(msg)
+                    id, msgDict = u.resolveMsg(msg)
                     logger.info("Id: " + str(id) + "  msgD: " + str(msgDict))
                     self.inbox[id] = msgDict
 
@@ -90,12 +90,6 @@ class msgClient:
         for p in self.threads:
             p.terminate()
 
-def getNewClient(ip, port=None):
-    cli = msgClient(ip)
-
-    #cli.run()
-
-    return cli
 
 
 

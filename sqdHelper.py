@@ -506,10 +506,7 @@ class sqdL:
 
                 ids = msgObj.inbox.keys()
                 for msgId in ids:
-                    if msgObj.inbox[msgId] in [True, False]:
-                        print "Message id:%s , return: %s" % (msgId, msgObj.inbox[msgId])
-                        del msgObj.outbox[msgId]
-                    if msgObj.inbox[msgId]["type"] == "R":
+                    if type(msgObj.inbox[msgId]) is not int and msgObj.inbox[msgId]["type"] == "R":
                         self.doJob(msgObj.inbox[msgId])
 
             # [TODO] is any inbox message had time more than threshold, it must be removed.
