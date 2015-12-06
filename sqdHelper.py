@@ -541,19 +541,19 @@ class sqdL:
 
             # if got the necessary info from client
             # pass it on to worker
-            if ret != None and len(ret["args"] == 2):
+            if ret != None and len(ret["args"]) == 3:
+                argsToWorker = ret
                 ret = None
 
-
+                idW = u.genNewId()
                 type = "R"
                 sName = "sqdL/addClient"
                 rName = "sqdW"
                 now = datetime.datetime.now()
                 opName = "addClient"
 
-                args = ret["args"]
 
-                msg = u.createMsg(id, type, sName, rName, now, opName, args)
+                msg = u.createMsg(idW, type, sName, rName, now, opName, argsToWorker)
 
                 print "keeping the message content in outbox..."
                 curId, M = u.resolveMsg(msg)
@@ -570,6 +570,8 @@ class sqdL:
                         return ret
                     else:
                         time.sleep(2)
+            else:
+                print "Something went wrong while sending to worker..."
 
         return ret
 
