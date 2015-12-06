@@ -151,6 +151,7 @@ class sqdC:
         msg = u.createMsg(msgId, type, sName, rName, now, opName, args)
 
         self.msgObj.send(msg)
+        self.msgObj.inbox.pop(id,0)
 
 
 
@@ -460,9 +461,6 @@ class sqdL:
         print "Leader config had be changed..."
         pass
 
-    def addClient(self, clientIP):
-        # Setting up connection between a client and a Worker
-        pass
 
     def addWorker(self, ip):
         # adding worker to cluster
@@ -535,8 +533,8 @@ class sqdL:
             for i in range(1,40):
                 if id  in self.clients[ip].inbox.keys():
                     ret = self.clients[ip].inbox[id]
-                    self.workers[ip].inbox.pop(id,0)
-                    self.workers[ip].outbox.pop(id,0)
+                    self.clients[ip].inbox.pop(id,0)
+                    self.clients[ip].outbox.pop(id,0)
                     print "Info from Client..", str(ret["args"])
                 else:
                     time.sleep(2)
