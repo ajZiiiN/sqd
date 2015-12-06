@@ -202,9 +202,9 @@ def fileTransfer(fromIp, pemKeyPath, fromPath, toPath):
             contents = line.split(" ")
             if 'K' in contents[3]:
                 M["bytes"] += float(contents[3][0:-1]) * 1000
-            if 'M' in contents[3]:
+            elif 'M' in contents[3]:
                 M["bytes"] += float(contents[3][0:-1]) * 1000000
-            if 'G' in contents[3]:
+            elif 'G' in contents[3]:
                 M["bytes"] += float(contents[3][0:-1]) * 1000000000
             else:
                 M["bytes"] += float(contents[3])
