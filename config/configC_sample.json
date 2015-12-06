@@ -6,6 +6,7 @@
     "cluster": "<cluster-id>",
     "game": "<game-id>",
     "host": "172.16.0.166",
+    "frompath": "/home/moonfrog/data/",
     "new": true
   }
 }

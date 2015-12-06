@@ -123,11 +123,40 @@ class sqdC:
         # post death, use the same method to confirm that the
         pass
 
-    def iamClient(self, leaderIP):
+    def iamClient(self, id, leaderIP, clusterID, workerIP):
         # adding to specific cluster
+        # handler for add client, message details
+        # gets details from Leader and sets all details
+        # sends an ack message with gameID, username(default moonfrog), fromPath
+        # --
+        print "I am the Client..."
+        self.clientConfig["client"]["leader"] = leaderIP
+        self.clientConfig["client"]["cluster"] = clusterID
+        self.clientConfig["client"]["worker"] = workerIP
+
+        utils.writeJSON(os.path.join(self.configDir, self.configFile), self.clientConfig)
+        print "Updating Client config..."
+
+        print "I am alive..."
+
+        msgId = id
+        type = "A"
+        sName = "sqdC/iamClient"
+        rName = "sqdL"
+        now = datetime.datetime.now()
+        opName = "addClient"
+
+        args = (self.clientConfig["client"]["host"], self.clientConfig["client"]["game"], self.clientConfig["client"]["frompath"] )
+
+        msg = u.createMsg(msgId, type, sName, rName, now, opName, args)
+
+        self.msgObj.send(msg)
+
+
 
         # Sets class variable with clusterUID
-        # get ack from leader, saves in config file
+
+
         pass
 
 
@@ -148,7 +177,8 @@ class sqdW:
 
         self.jobMap = {
             "addToCluster" : self.addToCluster,
-            "iamAlive" : self.iamAlive
+            "iamAlive" : self.iamAlive,
+            "addClient": self.addClient
         }
 
         if utils.checkCreateDir (self.configDir):
@@ -216,8 +246,29 @@ class sqdW:
 
         pass
 
-    def addClient(self):
-        #collects clients from the leader.
+    def addClient(self, id, clientIP = None, gameID=None, fromPath=None ): # find arguments in args of msgbox
+        # collects a client from the leader.
+        # Needs some client configs: gameID, fromPath
+        # start a subprocess to keep syncing data, for now lets start thread
+        msgD = self.msgObj.inbox[id]
+        clientIP = msgD["args"][0]
+        gameID = msgD["args"][1]
+        fromPath = msgD["args"][2]
+
+        self.workerConfig["worker"]["clients"].append(clientIP)
+        utils.writeJSON(os.path.join(self.configDir, self.configFile), self.workerConfig)
+
+        # [TODO]  in case start cluster but not new, for each client IP who does not have process to get data, start them
+        # start rsync job for all this client
+        print "starting Rsync for ip: %s , gameID: %s , fromPath: %s " % ( clientIP, gameID, fromPath)
+
+        print "I am alive..."
+        msg = u.createAckMsg(id,1)
+
+        self.msgObj.send(msg)
+        self.msgObj.inbox.pop(id,0)
+        return
+
         pass
 
     def confirmClient(self):
@@ -337,6 +388,8 @@ class sqdL:
             self.config = utils.readJSON(os.path.join(self.configDir, self.baseConfigFile))
             print "Base config updated..."
 
+        # [TODO] start messengers for each worker and clients available.
+
         pass
 
     def createFromSample(self, type):
@@ -424,6 +477,77 @@ class sqdL:
         if ip not in existingClientsInServer:
             self.clients[ip] = msgClient(ip)
             self.clients[ip].run()
+
+        # Check for client
+        print "Checking Client..."
+        ret = None
+        msgId = u.genNewId()
+        type = "R"
+        sName = "sqdL/addClient"
+        rName = "sqdC"
+        now = datetime.datetime.now()
+        opName = "iamClient"
+
+        # [TODO] for now always the last worker ip is send for testing purposes.
+        # it should be same worker on which addClient is envoked after getting infor from client
+        workerIp =  self.leaderConfig["leader"]["workers"][-1]
+        args = (self.leaderConfig["leader"]["host"], self.leaderConfig["leader"]["cluster"], workerIp)
+
+        msg = u.createMsg(msgId, type, sName, rName, now, opName, args)
+
+
+        if ip not in self.clients.keys():
+            print "Client (%s) not available..." % (ip,)
+        else:
+            id, M = u.resolveMsg(msg)
+            self.clients[ip].outbox[id] = M
+
+            self.clients[ip].send(msg)
+            print "checkClient: " + msg
+
+            for i in range(1,40):
+                if id  in self.clients[ip].inbox.keys():
+                    ret = self.clients[ip].inbox[id]
+                    self.workers[ip].inbox.pop(id,0)
+                    self.workers[ip].outbox.pop(id,0)
+                    print "Info from Client..", str(ret["args"])
+                else:
+                    time.sleep(2)
+
+            # if got the necessary info from client
+            # pass it on to worker
+            if ret != None and len(ret["args"] == 2):
+                ret = None
+
+
+                type = "R"
+                sName = "sqdL/addClient"
+                rName = "sqdW"
+                now = datetime.datetime.now()
+                opName = "addClient"
+
+                args = ret["args"]
+
+                msg = u.createMsg(id, type, sName, rName, now, opName, args)
+
+                print "keeping the message content in outbox..."
+                curId, M = u.resolveMsg(msg)
+                self.workers[workerIp].outbox[id] = M
+
+                self.workers[workerIp].send(msg)
+                print "Sending back to worker : ", msg
+
+                for i in range(1,30):
+                    if id  in self.workers[workerIp].inbox.keys():
+                        ret = self.workers[workerIp].inbox[id]
+                        self.workers[workerIp].inbox.pop(id,0)
+                        self.workers[workerIp].outbox.pop(id,0)
+                        return ret
+                    else:
+                        time.sleep(2)
+
+        return ret
+
         # Response handler for new worker coming in
         # If workers name
         pass

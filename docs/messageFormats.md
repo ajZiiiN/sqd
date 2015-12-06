@@ -26,16 +26,16 @@ Client to Worker:
 ------
 Leader to Worker (These whould be minimal)
 
-* check is alive :: [2, R]
+* check is alive :: [2, R]  [DONE]
 * average sum of files size and count transfered till date and today :: [3, R]
-* take this client :: [4: R]
+* take this client :: [4: R] 
 * ok | !ok :: [5, A]
 
 ------
 Worker to Leader
 
 * ask to join :: [5, R]
-* yes|no :: [2, A]
+* yes|no :: [2, A]  [DONE]
 * data :: [3, A]
 * accepted| rejected :: [4: A]
 
