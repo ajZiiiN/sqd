@@ -418,6 +418,7 @@ class sqdL:
 
         # [TODO] start messengers for each worker and clients available.
 
+
         pass
 
     def createFromSample(self, type):
@@ -486,22 +487,23 @@ class sqdL:
         print "Found: ", str(ret)
         pass
 
-    def addClient(self, ip):
+    def addClient(self, clientIp):
         # adding client to cluster
         # ---
-        print "Adding client: " + ip
+        print "Adding client: " + clientIp
         existingClientsInConfig = self.leaderConfig["leader"]["clients"]
 
-        if ip not in existingClientsInConfig:
-            self.leaderConfig["leader"]["clients"].append(ip)
+        if clientIp not in existingClientsInConfig:
+            self.leaderConfig["leader"]["clients"].append(clientIp)
+
             #update config
             utils.writeJSON(os.path.join(self.configDir, self.configFile), self.leaderConfig)
 
         existingClientsInServer = self.clients.keys()
 
-        if ip not in existingClientsInServer:
-            self.clients[ip] = msgClient(ip)
-            self.clients[ip].run()
+        if clientIp not in existingClientsInServer:
+            self.clients[clientIp] = msgClient(clientIp)
+            self.clients[clientIp].run()
 
         # Check for client
         print "Checking Client..."
@@ -521,20 +523,20 @@ class sqdL:
         msg = u.createMsg(msgId, type, sName, rName, now, opName, args)
 
 
-        if ip not in self.clients.keys():
-            print "Client (%s) not available..." % (ip,)
+        if clientIp not in self.clients.keys():
+            print "Client (%s) not available..." % (clientIp,)
         else:
             id, M = u.resolveMsg(msg)
-            self.clients[ip].outbox[id] = M
+            self.clients[clientIp].outbox[id] = M
 
-            self.clients[ip].send(msg)
+            self.clients[clientIp].send(msg)
             print "checkClient: " + msg
 
             for i in range(1,40):
-                if id  in self.clients[ip].inbox.keys():
-                    ret = self.clients[ip].inbox[id]
-                    self.clients[ip].inbox.pop(id,0)
-                    self.clients[ip].outbox.pop(id,0)
+                if id  in self.clients[clientIp].inbox.keys():
+                    ret = self.clients[clientIp].inbox[id]
+                    self.clients[clientIp].inbox.pop(id,0)
+                    self.clients[clientIp].outbox.pop(id,0)
                     print "Info from Client..", str(ret["args"])
                     break
                 else:
@@ -569,6 +571,11 @@ class sqdL:
                         self.workers[workerIp].inbox.pop(id,0)
                         self.workers[workerIp].outbox.pop(id,0)
                         print "Worker sent: ", ret
+                        if ret == 1:
+                            self.leaderConfig["leader"]["relation"][clientIp] = workerIp
+                            #update config
+                            utils.writeJSON(os.path.join(self.configDir, self.configFile), self.leaderConfig)
+
                         return ret
                     else:
                         time.sleep(2)
