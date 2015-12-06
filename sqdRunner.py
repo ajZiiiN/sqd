@@ -24,7 +24,7 @@ class sqdRunner:
         self.obj["leader"] = None
         self.obj["worker"] = None
         self.obj["client"] = None
-        self.obj["msgServer"] = None
+        self.obj["msgServer"] = None # this is msgServer for CLI commands
 
         self.job_functions = {
             "leader": {
@@ -89,6 +89,18 @@ class sqdRunner:
         pass
 
     def stopLeader(self):
+        print "Stopping msgClients for Client..."
+        clients = self.obj["leader"]["clients"].keys()
+        for cl in clients:
+            cl.stop()
+
+        print "Stopping msgClients for Client..."
+
+        workers = self.obj["leader"]["clients"].keys()
+        for wo in workers:
+            wo.stop()
+
+        self.obj["leader"] = None
         pass
 
     def stopLeaderRunner(self):
@@ -129,10 +141,13 @@ class sqdRunner:
         t.start()
         pass
 
-    def stopWorkerRunner(self):
+    def stopWorker(self):
+        print "Stopping worker msgServer..."
+        self.obj["worker"].msgObj.stop()
+        self.obj["worker"] = None
         pass
 
-    def stopWorker(self):
+    def stopWorkerRunner(self):
         pass
 
     def restartWorker(self):
@@ -168,6 +183,12 @@ class sqdRunner:
         t = threading.Thread(target=self.startClient)
         t.daemon = True
         t.start()
+        pass
+
+    def stopClient(self):
+        print "Stopping client msgServer..."
+        self.obj["client"].msgObj.stop()
+        self.obj["client"] = None
         pass
 
     def doJob(self, msgD):

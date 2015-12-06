@@ -23,6 +23,7 @@ class msgServer:
         self.inbox = dict()
         self.outbox= dict()
         self.ip = ip
+        self.keepRunning = True
 
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PAIR)
@@ -33,7 +34,7 @@ class msgServer:
 
     def recieve(self):
 
-        while True:
+        while self.keepRunning:
             try:
                 logger.info("From Server (%s) Recieve.." % (self.ip,))
                 #print "From Server Recieve.."
@@ -58,6 +59,7 @@ class msgServer:
                 logger.info(sys.exc_info()[0])
                 logger.info("Server-Recieve: Something went Wrong..")
                 return
+
 
     def send(self, msg=None):
 
@@ -95,6 +97,7 @@ class msgServer:
         self.threads.append(t2)
 
     def stop(self):
-        for p in self.threads:
-            p.terminate()
+        self.keepRunning = False
+        self.socket.close()
+        self.context.term()
 

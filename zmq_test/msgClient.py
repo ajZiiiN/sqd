@@ -22,6 +22,7 @@ class msgClient:
         self.inbox = dict()
         self.outbox= dict()
         self.ip = ip
+        self.keepRunning = True
 
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PAIR)
@@ -30,7 +31,7 @@ class msgClient:
 
     def recieve(self):
 
-        while True:
+        while self.keepRunning:
             try:
                 logger.info("From Client (%s) Recieve..." %(self.ip,))
                 #print "From Client Recieve.."
@@ -87,9 +88,6 @@ class msgClient:
 
 
     def stop(self):
-        for p in self.threads:
-            p.terminate()
-
-
-
-
+        self.keepRunning = False
+        self.socket.close()
+        self.context.term()
