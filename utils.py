@@ -191,7 +191,7 @@ def fileTransfer(fromIp, pemKeyPath, fromPath, toPath):
 
     M = dict()
     M["count"] = 0
-    M["size"] = 0
+    M["bytes"] = 0
     outl = out.split("\n")
     for line in outl:
         if "Number of regular files transferred" in line:
@@ -200,7 +200,14 @@ def fileTransfer(fromIp, pemKeyPath, fromPath, toPath):
 
         if "Total file size:" in line:
             contents = line.split(" ")
-            M["bytes"] += int(contents[2][0:-1])
+            if 'K' in contents[3]:
+                M["bytes"] += float(contents[3][0:-1]) * 1000
+            if 'M' in contents[3]:
+                M["bytes"] += float(contents[3][0:-1]) * 1000000
+            if 'G' in contents[3]:
+                M["bytes"] += float(contents[3][0:-1]) * 1000000000
+            else:
+                M["bytes"] += float(contents[3])
 
     print "Executing: " ,rsyncCmd
     print "__________________________________"
