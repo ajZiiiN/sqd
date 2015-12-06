@@ -40,6 +40,7 @@ def main():
 
     if args.status != None:
         msg = u.createCliMsg("status",(args.status,))
+        # cli.send(msg)
         print msg
 
     if args.leader != None:

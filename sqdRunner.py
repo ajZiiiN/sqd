@@ -199,6 +199,9 @@ class sqdRunner:
             print str( self.obj["leader"].job_functions [msgD["args"][0]] [msgD["args"][2]] )
             self.obj["leader"].job_functions [msgD["args"][0]] [msgD["args"][2]](msgD["args"][1])
             # calling function with ip as argument
+
+        if msgD["op"] == "status":
+            pass
         pass
 
 
@@ -213,7 +216,6 @@ class sqdRunner:
                 logger.info("Reading CLI inbox....")
                 M = msgObj.inbox
                 self.doJob(msgObj.inbox[msgId])
-                #del msgObj.inbox[msgId]
                 msgObj.inbox.pop(msgId,0)
 
                 # [TODO] is any inbox message had time more than threshold, it must be removed.
