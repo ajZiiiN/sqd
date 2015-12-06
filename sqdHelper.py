@@ -568,6 +568,7 @@ class sqdL:
                         ret = self.workers[workerIp].inbox[id]
                         self.workers[workerIp].inbox.pop(id,0)
                         self.workers[workerIp].outbox.pop(id,0)
+                        print "Worker sent: ", ret
                         return ret
                     else:
                         time.sleep(2)
