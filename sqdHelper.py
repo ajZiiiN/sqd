@@ -536,13 +536,14 @@ class sqdL:
                     self.clients[ip].inbox.pop(id,0)
                     self.clients[ip].outbox.pop(id,0)
                     print "Info from Client..", str(ret["args"])
+                    break
                 else:
                     time.sleep(2)
 
             # if got the necessary info from client
             # pass it on to worker
             if ret != None and len(ret["args"]) == 3:
-                argsToWorker = ret
+                argsToWorker = ret["args"]
                 ret = None
 
                 idW = u.genNewId()
