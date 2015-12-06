@@ -34,7 +34,7 @@ class sqdRunner:
             },
             "worker": {
                 "start": self.startWorkerRunner,
-                "stop" : self.stopWorkerRunner
+                "stop" : self.stopWorker
 
             },
             "client": {
@@ -147,8 +147,6 @@ class sqdRunner:
         self.obj["worker"] = None
         pass
 
-    def stopWorkerRunner(self):
-        pass
 
     def restartWorker(self):
         pass

@@ -33,7 +33,7 @@ class msgClient:
 
         while self.keepRunning:
             try:
-                logger.info("From Client (%s) Recieve..." %(self.ip,))
+                logger.info("From Client (%s:%s) Recieve..." %(self.ip,self.port))
                 #print "From Client Recieve.."
 
                 msg = self.socket.recv(zmq.NOBLOCK)
@@ -74,7 +74,12 @@ class msgClient:
 
     def run(self):
 
-        self.socket.send("Heartbeat")
+        try:
+            self.socket.send("Heartbeat")
+        except zmq.ZMQError as e:
+            print e
+            print "Immature close...."
+            return
         '''
         t1 = Process(target=self.send)
         t1.start()
@@ -89,6 +94,11 @@ class msgClient:
 
     def stop(self):
         self.keepRunning = False
-        time.sleep(5)
+        time.sleep(10)
         self.socket.close()
         self.context.term()
+
+        for t in self.threads:
+            t.join()
+
+        logger.info ("All stopped...")
