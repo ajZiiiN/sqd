@@ -174,25 +174,39 @@ def fileTransfer(fromIp, pemKeyPath, fromPath, toPath):
     #rsync command
     # rsync --dry-run --remove-source-files -azv "ssh -i ~/.ssh/id_rsa" <source-ip>:~/home/ajha/testDir/* /Users/ajeetjha/zi/sqd/data/
     # Dry run cmd:- rsync -chavzP -e "ssh -i ~/.ssh/id_rsa" --dry-run --remove-source-files --stats  moonfrog@192.168.56.103:/home/moonfrog/sandbox/data/* /home/moonfrog/sandbox/data/
-    # rsync -chavzP --stats moonfrog@192.168.56.102:/home/moonfrog/testDir/* /home/moonfrog/data/
-    # Working cmd: rsync -chavzP -e "ssh -i ~/.ssh/id_rsa" --remove-source-files --stats  moonfrog@192.168.56.103:/home/moonfrog/sandbox/data/* /home/moonfrog/sandbox/data/
+    # rsync -chavzP --stats moonfrog@192.168.56.102:/home/moonfrog/sandbox/data/* /home/moonfrog/sandbox/data/
+    # Working cmd: rsync -chavzP -e "ssh -o "StrictHostKeyChecking no" -i ~/.ssh/id_rsa" --remove-source-files --stats  moonfrog@192.168.56.103:/home/moonfrog/sandbox/data/* /home/moonfrog/sandbox/data/
 
-    rsyncCmd = 'rsync -chavzP -e "ssh -i ' + pemKeyPath + '" --dry-run --remove-source-files --stats  moonfrog@' + \
+    rsyncCmdDry = 'rsync -chavzP -e "ssh -i ' + pemKeyPath + '" --remove-source-files --stats  moonfrog@' + \
         fromIp + ':' + fromPath + ' ' + toPath
 
-    ssh = '-e "ssh -i ' + pemKeyPath + '"'
-    src = 'moonfrog@'+ fromIp +":" + fromPath
-    dest = toPath
-    rsyncCmd1 = ['rsync', '-chavzP' , ssh , '--dry-run', '--remove-source-files', '--stats', src, dest]
+    rsyncCmd = 'rsync -chavzP -e "ssh -i ' + pemKeyPath + '" --dry-run --remove-source-files --stats  moonfrog@' + \
+                  fromIp + ':' + fromPath + ' ' + toPath
 
+    #cmd1 = "rsync -chavzP --stats moonfrog@192.168.56.103:/home/moonfrog/sandbox/data/* /home/moonfrog/sandbox/data/"
+    #cmd = ['rsync', '-chavzP', '--stats', 'moonfrog@192.168.56.103:/home/moonfrog/sandbox/data', '/home/moonfrog/sandbox/data']
 
-    p = subprocess.Popen(rsyncCmd1, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(rsyncCmdDry, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.communicate()
 
-    print "Executing: " ,rsyncCmd1
+    M = dict()
+    M["count"] = 0
+    M["size"] = 0
+    outl = out.split("\n")
+    for line in outl:
+        if "Number of regular files transferred" in line:
+            contents = line.split(" ")
+            M["count"] += int(contents[-1])
+
+        if "Total file size:" in line:
+            contents = line.split(" ")
+            M["bytes"] += int(contents[2][0:-1])
+
+    print "Executing: " ,rsyncCmd
     print "__________________________________"
     print out
     # Use stats to create the status info
+    return M
 
     pass
 
