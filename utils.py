@@ -4,6 +4,7 @@ import os
 import logging
 import md5
 from datetime import datetime
+import subprocess
 
 def checkCreateDir(path):
 
@@ -172,13 +173,25 @@ def fileTransfer(fromIp, pemKeyPath, fromPath, toPath):
 
     #rsync command
     # rsync --dry-run --remove-source-files -azv "ssh -i ~/.ssh/id_rsa" <source-ip>:~/home/ajha/testDir/* /Users/ajeetjha/zi/sqd/data/
-    # ex:- rsync -chavzP -e "ssh -i ~/.ssh/id_rsa" --dry-run --remove-source-files --stats  moonfrog@192.168.56.102:/home/moonfrog/testDir/* /home/moonfrog/data/
+    # Dry run cmd:- rsync -chavzP -e "ssh -i ~/.ssh/id_rsa" --dry-run --remove-source-files --stats  moonfrog@192.168.56.103:/home/moonfrog/sandbox/data/* /home/moonfrog/sandbox/data/
     # rsync -chavzP --stats moonfrog@192.168.56.102:/home/moonfrog/testDir/* /home/moonfrog/data/
+    # Working cmd: rsync -chavzP -e "ssh -i ~/.ssh/id_rsa" --remove-source-files --stats  moonfrog@192.168.56.103:/home/moonfrog/sandbox/data/* /home/moonfrog/sandbox/data/
 
     rsyncCmd = 'rsync -chavzP -e "ssh -i ' + pemKeyPath + '" --dry-run --remove-source-files --stats  moonfrog@' + \
         fromIp + ':' + fromPath + ' ' + toPath
 
-    print "Executing: " ,rsyncCmd
+    ssh = '-e "ssh -i ' + pemKeyPath + '"'
+    src = 'moonfrog@'+ fromIp +":" + fromPath
+    dest = toPath
+    rsyncCmd1 = ['rsync', '-chavzP' , ssh , '--dry-run', '--remove-source-files', '--stats', src, dest]
+
+
+    p = subprocess.Popen(rsyncCmd1, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
+
+    print "Executing: " ,rsyncCmd1
+    print "__________________________________"
+    print out
     # Use stats to create the status info
 
     pass

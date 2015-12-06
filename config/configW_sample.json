@@ -7,5 +7,11 @@
     "game": "<game-id>",
     "host": "172.16.0.166",
     "new": true
+  },
+  "data": {
+    "today":{
+      "count": -1,
+      ""
+    }
   }
 }
