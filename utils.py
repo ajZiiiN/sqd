@@ -183,9 +183,6 @@ def fileTransfer(fromIp, pemKeyPath, fromPath, toPath):
     rsyncCmd = 'rsync -chavzP -e "ssh -i ' + pemKeyPath + '" --dry-run --remove-source-files --stats  moonfrog@' + \
                   fromIp + ':' + fromPath + ' ' + toPath
 
-    #cmd1 = "rsync -chavzP --stats moonfrog@192.168.56.103:/home/moonfrog/sandbox/data/* /home/moonfrog/sandbox/data/"
-    #cmd = ['rsync', '-chavzP', '--stats', 'moonfrog@192.168.56.103:/home/moonfrog/sandbox/data', '/home/moonfrog/sandbox/data']
-
     p = subprocess.Popen(rsyncCmdDry, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.communicate()
 

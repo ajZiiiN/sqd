@@ -6,9 +6,10 @@ import genMsgId as generator
 from zmq_test.msgServer import msgServer
 from zmq_test.msgClient import msgClient
 import utils as u
-import datetime
+from datetime import datetime, date, time, timedelta
 import time
 import threading
+import sys
 
 
 
@@ -143,7 +144,7 @@ class sqdC:
         type = "A"
         sName = "sqdC/iamClient"
         rName = "sqdL"
-        now = datetime.datetime.now()
+        now = datetime.now()
         opName = "addClient"
 
         args = (self.clientConfig["client"]["host"], self.clientConfig["client"]["game"], self.clientConfig["client"]["frompath"] )
@@ -264,6 +265,9 @@ class sqdW:
         self.workerConfig[confType]["game"] = -1
         self.workerConfig[confType]["new"] = False
 
+        # Setting up statu
+        self.workerConfig["status"] = dict()
+
         utils.writeJSON(os.path.join(self.configDir, self.configFile), self.workerConfig)
         print "Worker config had been modified..."
         pass
@@ -284,6 +288,20 @@ class sqdW:
         fromPath = args[2]
 
         self.workerConfig["worker"]["clients"].append(clientIP)
+
+        self.workerConfig["status"][clientIP] = {
+            "today":{
+                "count": 0,
+                "bytes": 0
+            },
+            "full": {
+                "count": 0,
+                "bytes": 0
+            },
+            "fromdate": "<date since when client exists>"
+        }
+        self.workerConfig["status"][clientIP]["fromdate"] = str(datetime.now())
+
         utils.writeJSON(os.path.join(self.configDir, self.configFile), self.workerConfig)
 
         # [TODO]  in case start cluster but not new, for each client IP who does not have process to get data, start them
@@ -295,7 +313,10 @@ class sqdW:
 
         self.msgObj.send(msg)
         self.msgObj.inbox.pop(id,0)
-        return
+
+        # Starting Rsync runner
+        print "Starting Rsync...."
+        self.doCopy()
 
         pass
 
@@ -303,9 +324,6 @@ class sqdW:
         # post death, confirm the clients it previously had.
         pass
 
-    def ackClient(self):
-        # handler for pollWorker, replying that the worker is alive
-        pass
 
     def removeClient(self):
         # on changeWorker or when client is dead client info should be removed from the config
@@ -317,7 +335,49 @@ class sqdW:
 
     def getDataFromClient(self):
         # keep pulling data from client at the rate set by client or leader
+        try:
+            while True:
+                clientList = self.workerConfig["worker"]["clients"]
+
+                for cl in clientList:
+                    if cl in self.workerConfig["status"].keys():
+                        status = u.fileTransfer(cl,"~/.ssh/id_rsa","/home/moonfrog/sandbox/data/", "/home/moonfrog/sandbox/data/")
+
+                        # [TODO] For now full contains count and bytes of yest , goal is to have average per day.
+
+                        # updating today's status of client data
+                        self.workerConfig["status"][cl]["today"]["count"] += status["count"]
+                        self.workerConfig["status"][cl]["today"]["bytes"] += status["bytes"]
+
+                        # updating full status
+                        startDatetime = datetime.strptime(self.workerConfig["status"][cl]["fromdate"], "%Y-%m-%d %H:%M:%S.%f")
+                        diff = timedelta(days=2)
+                        now = datetime.now()
+
+                        if now - startDatetime >= diff:
+                            self.workerConfig["status"][cl]["full"]["count"] = self.workerConfig["status"][cl]["today"]["count"]
+                            self.workerConfig["status"][cl]["full"]["bytes"] = self.workerConfig["status"][cl]["today"]["bytes"]
+
+                            self.workerConfig["status"][cl]["today"]["count"] = 0
+                            self.workerConfig["status"][cl]["today"]["bytes"] = 0
+
+                        print str(self.workerConfig["status"][cl])
+                        utils.writeJSON(os.path.join(self.configDir, self.configFile), self.workerConfig)
+
+                time.sleep(60)
+        except:
+            logger.info(sys.exc_info()[0])
+            logger.info("Stopping Rsync job on all clients... reason( %s )" % (sys.exc_info()[0]))
+            return
+
         pass
+
+    def doCopy(self):
+        # Runner for getDataFromClient
+        print "Starting Rsync..."
+        t = threading.Thread(target=self.getDataFromClient)
+        t.daemon = True
+        t.start()
 
     def getInfoOnClientData(self):
         # get storage and rate from which we are getting data from a client
@@ -512,7 +572,7 @@ class sqdL:
         type = "R"
         sName = "sqdL/addClient"
         rName = "sqdC"
-        now = datetime.datetime.now()
+        now = datetime.now()
         opName = "iamClient"
 
         # [TODO] for now always the last worker ip is send for testing purposes.
@@ -552,7 +612,7 @@ class sqdL:
                 type = "R"
                 sName = "sqdL/addClient"
                 rName = "sqdW"
-                now = datetime.datetime.now()
+                now = datetime.now()
                 opName = "addClient"
 
 
@@ -607,7 +667,7 @@ class sqdL:
         type = "R"
         sName = "sqdL/checkWorker"
         rName = "sqdW"
-        now = datetime.datetime.now()
+        now = datetime.now()
         opName = "iamAlive"
         args = tuple()
 

@@ -8,10 +8,18 @@
     "host": "172.16.0.166",
     "new": true
   },
-  "data": {
-    "today":{
-      "count": -1,
-      ""
+  "status": {
+    "<client-ip>": {
+      "today":{
+        "count": -1,
+        "bytes": -1
+      },
+      "full": {
+        "count": -1,
+        "bytes": -1
+      },
+      "fromdate": "<date since when status exists>"
     }
+
   }
 }
