@@ -39,7 +39,7 @@ class sqdRunner:
             },
             "client": {
                 "start": self.startClientRunner,
-                "stop" : self.stopWorkerRunner
+                "stop" : self.stopClient
 
             }
         }

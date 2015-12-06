@@ -89,5 +89,6 @@ class msgClient:
 
     def stop(self):
         self.keepRunning = False
+        time.sleep(5)
         self.socket.close()
         self.context.term()
