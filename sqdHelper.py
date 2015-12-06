@@ -32,7 +32,7 @@ class sqdC:
         self.msgObj = None # This is msgServer, initialized when we start the worker
 
         self.jobMap = {
-            "clientadd" : self.iamClient
+            "iamClient" : self.iamClient
         }
 
         if utils.checkCreateDir (self.configDir):
