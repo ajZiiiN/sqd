@@ -123,16 +123,16 @@ class sqdC:
         # post death, use the same method to confirm that the
         pass
 
-    def iamClient(self, id, leaderIP, clusterID, workerIP):
+    def iamClient(self, id, args):
         # adding to specific cluster
         # handler for add client, message details
         # gets details from Leader and sets all details
         # sends an ack message with gameID, username(default moonfrog), fromPath
         # --
         print "I am the Client..."
-        self.clientConfig["client"]["leader"] = leaderIP
-        self.clientConfig["client"]["cluster"] = clusterID
-        self.clientConfig["client"]["worker"] = workerIP
+        self.clientConfig["client"]["leader"] = args[0]
+        self.clientConfig["client"]["cluster"] = args[1]
+        self.clientConfig["client"]["worker"] = args[2]
 
         utils.writeJSON(os.path.join(self.configDir, self.configFile), self.clientConfig)
         print "Updating Client config..."
@@ -158,6 +158,33 @@ class sqdC:
 
 
         pass
+
+    def doJob(self, id, msgD):
+        # for this message do something
+        print "doing job for: ", str(msgD)
+
+        print str(self.jobMap[msgD["opName"]])
+        self.jobMap[msgD["opName"]](id, msgD["args"])
+
+
+        pass
+
+    def msgReader(self):
+        print "Reading already..."
+        while True:
+            ids = self.msgObj.inbox.keys()
+            for msgId in ids:
+                if self.msgObj.inbox[msgId]["type"] == "R":
+                    self.doJob(msgId, self.msgObj.inbox[msgId])
+
+                    # [TODO] is any inbox message had time more than threshold, it must be removed.
+        pass
+
+    def reader(self):
+        print "Reader for worker..."
+        t = threading.Thread(target=self.msgReader)
+        t.daemon = True
+        t.start()
 
 
 
@@ -246,14 +273,14 @@ class sqdW:
 
         pass
 
-    def addClient(self, id, clientIP = None, gameID=None, fromPath=None ): # find arguments in args of msgbox
+    def addClient(self, id, args ): # find arguments in args of msgbox
         # collects a client from the leader.
         # Needs some client configs: gameID, fromPath
         # start a subprocess to keep syncing data, for now lets start thread
-        msgD = self.msgObj.inbox[id]
-        clientIP = msgD["args"][0]
-        gameID = msgD["args"][1]
-        fromPath = msgD["args"][2]
+        #msgD = self.msgObj.inbox[id]
+        clientIP = args[0]
+        gameID = args[1]
+        fromPath = args[2]
 
         self.workerConfig["worker"]["clients"].append(clientIP)
         utils.writeJSON(os.path.join(self.configDir, self.configFile), self.workerConfig)

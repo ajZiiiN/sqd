@@ -155,6 +155,9 @@ class sqdRunner:
         print "Running client msgServer..."
         client.msgObj.run()
 
+        print "Starting Readers..."
+        client.reader()
+
         # Simultaneously we Leader to do addClient, which starts a msgClient at the worker's end
         pass
 
