@@ -29,7 +29,7 @@ class sqdRunner:
         self.job_functions = {
             "leader": {
                 "start": self.startLeaderRunner,
-                "stop" : self.stopLeaderRunner
+                "stop" : self.stopLeader
 
             },
             "worker": {
@@ -144,6 +144,7 @@ class sqdRunner:
     def stopWorker(self):
         print "Stopping worker msgServer..."
         self.obj["worker"].msgObj.stop()
+        self.obj["worker"].stopCopy()
         self.obj["worker"] = None
         pass
 

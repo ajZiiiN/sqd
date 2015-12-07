@@ -204,6 +204,8 @@ class sqdW:
         self.workerConfig = dict()
         self.msgObj = None # This is msgServer, initialized when we start the worker
 
+        self.keepGettingData = True
+
         self.jobMap = {
             "addToCluster" : self.addToCluster,
             "iamAlive" : self.iamAlive,
@@ -336,7 +338,7 @@ class sqdW:
     def getDataFromClient(self):
         # keep pulling data from client at the rate set by client or leader
         try:
-            while True:
+            while self.keepGettingData:
                 clientList = self.workerConfig["worker"]["clients"]
 
                 for cl in clientList:
@@ -378,6 +380,11 @@ class sqdW:
         t = threading.Thread(target=self.getDataFromClient)
         t.daemon = True
         t.start()
+
+    def stopCopy(self):
+        print "Stopping rsync..."
+        self.keepGettingData = False
+        time.sleep(60)
 
     def getInfoOnClientData(self):
         # get storage and rate from which we are getting data from a client
