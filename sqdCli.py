@@ -26,7 +26,7 @@ def main():
 
     args = parser.parse_args()
 
-    cli = msgClient("172.16.0.166","6667")
+    cli = msgClient("192.168.56.1","6667")
 
 
     if args.mode != None:

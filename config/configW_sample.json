@@ -5,7 +5,7 @@
     "leader": "<leader-ip>",
     "cluster": "<cluster-id>",
     "game": "<game-id>",
-    "host": "172.16.0.166",
+    "host": "192.168.56.1",
     "new": true
   },
   "status": {

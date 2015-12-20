@@ -225,3 +225,29 @@ def getLogger(logger_name, log_file, level=logging.INFO):
     l.addHandler(fileHandler)
 
     return l
+
+def getHost():
+    cmd = "ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/'"
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
+    host =  out.strip()
+    return host
+
+
+def setupSample():
+    #client
+    cl = readJSON("config/configC_sample.json")
+    wo = readJSON("config/configW_sample.json")
+    le = readJSON("config/configL_sample.json")
+
+    host = getHost()
+
+    cl["host"] = host
+    wo["host"] = host
+    le["host"] = host
+
+    writeJSON("config/configC_sample.json", cl)
+    writeJSON("config/configW_sample.json", wo)
+    writeJSON("config/configL_sample.json", le)
+
+

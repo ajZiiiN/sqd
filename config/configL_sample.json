@@ -10,7 +10,7 @@
     "idle_workers": ["<W1-ip>", "<W2-ip>"],
     "cluster": "<cluster-id>",
     "game": 1,
-    "host": "172.16.0.166",
+    "host": "192.168.56.1",
     "new": true
   }
 }

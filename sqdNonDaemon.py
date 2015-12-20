@@ -8,10 +8,12 @@ from zmq_test.msgClient import msgClient
 import utils as u
 import threading
 
+
 def main():
 
+
     runner = sqdR.sqdRunner()
-    runner.startMsgServer("172.16.0.166","6667")
+    runner.startMsgServer("192.168.56.1","6667")
 
     runner.obj["msgServer"].run()
 
