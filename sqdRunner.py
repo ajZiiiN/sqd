@@ -11,7 +11,7 @@ import utils as u
 # add worker
 # add client
 
-logger = u.getLogger("RunnerLog", "/Users/ajeetjha/zi/sqd/logs/runner.log")
+logger = u.getLogger("RunnerLog", "/Users/ajeetjha/sandbox/sqd/logs/runner.log")
 
 
 class sqdRunner:

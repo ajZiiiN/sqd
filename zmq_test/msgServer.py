@@ -9,7 +9,7 @@ import logging
 import utils as u
 
 
-logger = u.getLogger("ServerLog", "/Users/ajeetjha/zi/sqd/logs/msgServer.log")
+logger = u.getLogger("ServerLog", "/Users/ajeetjha/sandbox/sqd/logs/msgServer.log")
 
 class msgServer:
 

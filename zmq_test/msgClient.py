@@ -8,7 +8,7 @@ from multiprocessing import Process
 import logging
 
 
-logger = u.getLogger("ClientLog", "/Users/ajeetjha/zi/sqd/logs/msgClient.log")
+logger = u.getLogger("ClientLog", "/Users/ajeetjha/sandbox/sqd/logs/msgClient.log")
 
 class msgClient:
     def __init__(self, ip, port=None):
