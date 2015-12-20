@@ -11,9 +11,18 @@ import threading
 
 def main():
 
+    hostIp = u.getHost()
+    if hostIp != "":
+        u.setupSample()
 
     runner = sqdR.sqdRunner()
-    runner.startMsgServer("192.168.56.1","6667")
+
+    if hostIp == "":
+        print "Starting Messenger at: %s"%("192.168.56.1",)
+        runner.startMsgServer("192.168.56.1","6667")
+    else:
+        print "Starting Messenger at: %s"%(hostIp,)
+        runner.startMsgServer(hostIp,"6667")
 
     runner.obj["msgServer"].run()
 

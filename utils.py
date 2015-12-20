@@ -166,9 +166,6 @@ def createAckMsg(id, value):
     msg = id + "::A::" + str(value)
     return msg
 
-def setSampleConfig():
-    pass
-
 def fileTransfer(fromIp, pemKeyPath, fromPath, toPath):
 
     #rsync command

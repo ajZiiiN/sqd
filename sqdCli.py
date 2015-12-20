@@ -26,7 +26,16 @@ def main():
 
     args = parser.parse_args()
 
-    cli = msgClient("192.168.56.1","6667")
+    hostIp = u.getHost()
+
+    if hostIp == "":
+        print "Cli at: %s"%("192.168.56.1",)
+        cli = msgClient("192.168.56.1","6667")
+    else:
+        print "Cli at: %s"%(hostIp,)
+        cli = msgClient(hostIp,"6667")
+
+
 
 
     if args.mode != None:
